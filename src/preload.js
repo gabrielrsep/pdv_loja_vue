@@ -12,6 +12,16 @@ contextBridge.exposeInMainWorld('api', {
     saveProduct: (product) => ipcRenderer.invoke('product:save', product),
     selectImage: () => ipcRenderer.invoke('dialog:select-image'),
     generateQR: (text) => ipcRenderer.invoke('product:generate-qr', text),
+
+    // Categories
+    getCategories: () => ipcRenderer.invoke('category:get-all'),
+    getCategory: (id) => ipcRenderer.invoke('category:get-by-id', id),
+    saveCategory: (category) => {
+        if (category.id) return ipcRenderer.invoke('category:update', category);
+        return ipcRenderer.invoke('category:create', category);
+    },
+    deleteCategory: (id) => ipcRenderer.invoke('category:delete', id),
+
     createSale: (saleData) => ipcRenderer.invoke('sale:create', saleData),
     undoSale: (id, authData) => ipcRenderer.invoke('sale:undo', id, authData),
     getRecentSales: () => ipcRenderer.invoke('sales:get-recent'),

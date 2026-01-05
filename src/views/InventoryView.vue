@@ -50,9 +50,11 @@
           <thead>
             <tr class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-50">
               <th class="px-8 py-5">Código</th>
-              <th class="px-8 py-5">Nome do Produto</th>
-              <th class="px-8 py-5">Preço</th>
-              <th class="px-8 py-5">Nível de Estoque</th>
+              <th class="px-8 py-5">Produto</th>
+              <th class="px-8 py-5">Departamento</th>
+              <th class="px-8 py-5">Custo</th>
+              <th class="px-8 py-5">Venda</th>
+              <th class="px-8 py-5">Estoque</th>
               <th class="px-8 py-5 text-right">Ações</th>
             </tr>
           </thead>
@@ -61,7 +63,23 @@
               <td class="px-8 py-5">
                 <span class="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">#{{ product.id }}</span>
               </td>
-              <td class="px-8 py-5 font-bold text-slate-700">{{ product.name }}</td>
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-2">
+                  <span 
+                    class="w-3 h-3 rounded-full" 
+                    :style="{ backgroundColor: product.category_color || '#CBD5E1' }"
+                  ></span>
+                  <span class="font-bold text-slate-700">{{ product.name }}</span>
+                </div>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 ml-5">{{ product.category_name || 'Sem Categoria' }}</p>
+              </td>
+              <td class="px-8 py-5">
+                <span v-if="product.gender" class="text-[10px] font-black uppercase tracking-tight px-2.5 py-1 bg-slate-100 text-slate-500 rounded-lg">
+                  {{ product.gender }}
+                </span>
+                <span v-else class="text-[10px] font-bold text-slate-300 italic uppercase">Não definido</span>
+              </td>
+              <td class="px-8 py-5 font-bold text-slate-400 text-xs">{{ formatCurrency(product.cost_price) }}</td>
               <td class="px-8 py-5 font-black text-slate-900">{{ formatCurrency(product.price) }}</td>
               <td class="px-8 py-5">
                 <div class="flex items-center gap-3">
@@ -121,23 +139,62 @@
         </div>
         
         <form @submit.prevent="saveProduct" class="p-8 space-y-6">
-          <div class="space-y-2">
-            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nome do Produto</label>
-            <input v-model="form.name" type="text" placeholder="Ex: Camiseta Oversized" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-bold text-sm" />
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nome do Produto</label>
+              <input v-model="form.name" type="text" placeholder="Ex: Camiseta Oversized" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-bold text-sm" />
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Categoria</label>
+              <select v-model="form.category_id" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-bold text-sm appearance-none cursor-pointer">
+                <option :value="null">Sem Categoria</option>
+                <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Gênero / Departamento (Opcional)</label>
+              <select v-model="form.gender" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-bold text-sm appearance-none cursor-pointer">
+                <option :value="null">Não especificado</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Unissex">Unissex</option>
+                <option value="Infantil">Infantil</option>
+              </select>
+            </div>
           </div>
           
           <div class="grid grid-cols-2 gap-6">
             <div class="space-y-2">
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Preço Unitário</label>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Preço de Custo</label>
+              <div class="relative flex gap-2">
+                <div class="relative flex-1">
+                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 font-bold text-xs">R$</span>
+                  <input v-model.number="form.cost_price" type="number" step="0.01" required class="w-full pl-10 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-bold text-sm" />
+                </div>
+                <button 
+                  type="button"
+                  @click="applyMargin"
+                  class="px-4 bg-primary-50 text-primary-600 rounded-2xl border border-primary-100 font-black text-[10px] uppercase tracking-widest hover:bg-primary-600 hover:text-white transition-all active:scale-95 shadow-sm"
+                  title="Aplicar Margem do Sistema"
+                >
+                  +{{ settingsStore.config.margin }}%
+                </button>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Preço de Venda</label>
               <div class="relative">
                 <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 font-bold text-xs">R$</span>
                 <input v-model.number="form.price" type="number" step="0.01" required class="w-full pl-10 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-black text-sm" />
               </div>
             </div>
-            <div class="space-y-2">
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Estoque Inicial</label>
-              <input v-model.number="form.stock" type="number" placeholder="0" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-black text-sm text-center" />
-            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Estoque Inicial</label>
+            <input v-model.number="form.stock" type="number" placeholder="0" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-black text-sm text-center" />
           </div>
 
           <div class="flex flex-col gap-3 pt-4">
@@ -156,6 +213,9 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
+import { useSettingsStore } from '../store/settings';
+
+const settingsStore = useSettingsStore();
 
 const products = ref([]);
 const search = ref('');
@@ -167,8 +227,21 @@ const editingId = ref(null);
 const form = reactive({
   name: '',
   price: 0,
-  stock: 0
+  cost_price: 0,
+  stock: 0,
+  category_id: null,
+  gender: null
 });
+
+const categories = ref([]);
+
+const loadCategories = async () => {
+  try {
+    categories.value = await window.api.getCategories();
+  } catch (err) {
+    console.error('Erro ao carregar categorias:', err);
+  }
+};
 
 const fetchProducts = async () => {
   try {
@@ -188,24 +261,31 @@ const openModal = (product = null) => {
     editingId.value = product.id;
     form.name = product.name;
     form.price = product.price;
+    form.cost_price = product.cost_price || 0;
     form.stock = product.stock;
+    form.category_id = product.category_id;
+    form.gender = product.gender;
   } else {
     editingId.value = null;
     form.name = '';
     form.price = 0;
+    form.cost_price = 0;
     form.stock = 0;
+    form.category_id = null;
+    form.gender = null;
   }
   showModal.value = true;
 };
 
+const applyMargin = () => {
+  if (!form.cost_price) return;
+  const margin = settingsStore.config.margin || 0;
+  form.price = Number((form.cost_price * (1 + margin / 100)).toFixed(2));
+};
+
 const saveProduct = async () => {
   try {
-    let result;
-    if (editingId.value) {
-      result = await window.api.updateProduct({ id: editingId.value, ...form });
-    } else {
-      result = await window.api.createProduct({ ...form });
-    }
+    const result = await window.api.saveProduct({ id: editingId.value, ...form });
 
     if (result.success) {
       showModal.value = false;
@@ -234,5 +314,9 @@ const formatCurrency = (val) => {
   return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
-onMounted(fetchProducts);
+onMounted(async () => {
+  await settingsStore.fetchConfig();
+  fetchProducts();
+  loadCategories();
+});
 </script>

@@ -11,6 +11,7 @@ const SettingsView = () => import('../views/SettingsView.vue');
 const CustomersView = () => import('../views/CustomersView.vue');
 const FinancialView = () => import('../views/FinancialView.vue');
 const SalesView = () => import('../views/SalesView.vue');
+const CategoriesView = () => import('../views/CategoriesView.vue');
 
 const routes = [
     {
@@ -66,6 +67,12 @@ const routes = [
         path: '/settings',
         name: 'settings',
         component: SettingsView,
+        meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+        path: '/categories',
+        name: 'categories',
+        component: CategoriesView,
         meta: { requiresAuth: true, requiresAdmin: true }
     }
 ];

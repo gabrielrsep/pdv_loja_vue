@@ -11,13 +11,15 @@ function registerCustomerHandlers(db) {
         let queryParams = [];
 
         if (search) {
-            sql += " WHERE name LIKE ? OR phone LIKE ? OR address LIKE ?";
-            countSql += " WHERE name LIKE ? OR phone LIKE ? OR address LIKE ?";
+            sql += " WHERE name LIKE ? OR id = ?";
+            countSql += " WHERE name LIKE ? OR id = ?";
             const searchParam = `%${search}%`;
-            queryParams = [searchParam, searchParam, searchParam];
+            queryParams = [searchParam, search];
         }
 
         sql += " ORDER BY balance DESC LIMIT ? OFFSET ?";
+
+        console.log(sql);
 
         const data = db.prepare(sql).all([...queryParams, pageSize, offset]);
         const total = db.prepare(countSql).get(queryParams).total;

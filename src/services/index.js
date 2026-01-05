@@ -4,7 +4,8 @@ import { registerCustomerHandlers } from './customer.service.js';
 import { registerFinancialHandlers } from './financial.service.js';
 import { registerProductHandlers } from './product.service.js';
 import { registerSalesHandlers } from './sales.service.js';
-import { registerStatsHandlers } from './stats.service.js'
+import { registerStatsHandlers } from './stats.service.js';
+import { registerCategoryHandlers } from './category.service.js';
 
 export const registerAllHandlers = (db) => {
     registerAuthHandlers(db);
@@ -14,4 +15,5 @@ export const registerAllHandlers = (db) => {
     registerProductHandlers(db);
     registerSalesHandlers(db);
     registerStatsHandlers(db);
+    registerCategoryHandlers(db);
 };

@@ -1,12 +1,22 @@
+CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    color TEXT DEFAULT '#3B82F6', -- blue-500 default
+    icon TEXT DEFAULT 'tag',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    category TEXT,
+    category_id INTEGER,
     size TEXT,
     price REAL NOT NULL,
     cost_price REAL NOT NULL,
     stock INTEGER NOT NULL,
-    image_path TEXT
+    -- image_path TEXT,
+    gender TEXT, -- Masculino, Feminino, Unissex (Opcional)
+    FOREIGN KEY(category_id) REFERENCES categories(id)
 );
 
 CREATE TABLE IF NOT EXISTS customers (

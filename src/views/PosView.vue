@@ -27,40 +27,55 @@
         </div>
         
         <div class="flex-1 overflow-y-auto p-8">
-          <div v-if="products.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="product in products" :key="product.id" class="group bg-white rounded-[2rem] border border-slate-100 p-6 transition-all hover:shadow-xl hover:shadow-primary-600/5 hover:border-primary-100 flex flex-col justify-between relative overflow-hidden">
-              <!-- Decorative Background Element -->
-              <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity -z-1"></div>
+          <div v-if="products.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
+            <div v-for="product in products" :key="product.id" class="group bg-white rounded-[2.5rem] border border-slate-100 p-7 transition-all duration-300 hover:shadow-2xl hover:shadow-primary-600/10 hover:border-primary-100 flex flex-col justify-between relative overflow-hidden h-full">
+              <!-- Decorative Background Gradient -->
+              <div class="absolute inset-0 bg-gradient-to-br from-primary-50/0 via-transparent to-primary-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
-              <div>
-                <div class="flex justify-between items-start mb-4">
+              <div class="relative z-10">
+                <div class="flex justify-between items-start mb-6">
                   <span 
                     :class="[
-                      'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border',
+                      'px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm',
                       product.stock > 10 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
                       product.stock > 0 ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-red-50 text-red-700 border-red-100'
                     ]"
                   >
-                    {{ product.stock }} em estoque
+                    {{ product.stock }} EM ESTOQUE
                   </span>
-                  <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">#{{ product.id }}</span>
+                  <span class="text-[11px] font-black text-slate-200 uppercase tracking-widest group-hover:text-primary-200 transition-colors">#{{ product.id }}</span>
                 </div>
                 
-                <h4 class="font-bold text-slate-800 text-lg leading-snug mb-1 group-hover:text-primary-600 transition-colors">{{ product.name }}</h4>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ product.category || 'Geral' }}</p>
+                <h4 class="font-black text-slate-800 text-xl leading-tight mb-2 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[3.5rem]">{{ product.name }}</h4>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <div class="flex items-center gap-1.5 px-2 py-1 bg-slate-50 rounded-lg border border-slate-100 group-hover:bg-white group-hover:border-primary-50 transition-all">
+                    <span 
+                      v-if="product.category_color" 
+                      class="w-2.5 h-2.5 rounded-full shadow-sm" 
+                      :style="{ backgroundColor: product.category_color }"
+                    ></span>
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-wider">{{ product.category_name || 'Geral' }}</p>
+                  </div>
+                  <span v-if="product.gender" class="text-[9px] font-black bg-slate-100 text-slate-400 px-2 py-1 rounded-lg uppercase tracking-widest group-hover:bg-primary-50 group-hover:text-primary-400 transition-all">
+                    {{ product.gender }}
+                  </span>
+                </div>
               </div>
 
-              <div class="mt-6 pt-6 border-t border-slate-50 flex items-center justify-between">
+              <div class="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between relative z-10">
                 <div class="flex flex-col">
-                  <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Preço</span>
-                  <span class="font-black text-slate-900 text-xl">{{ formatCurrency(product.price) }}</span>
+                  <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em] mb-1">Preço</span>
+                  <div class="flex items-baseline gap-1">
+                    <span class="text-xs font-black text-slate-900">R$</span>
+                    <span class="font-black text-slate-900 text-2xl tracking-tighter">{{ product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+                  </div>
                 </div>
                 
                 <button 
                   @click="addToCart(product)"
-                  class="w-12 h-12 bg-primary-600 text-white rounded-2xl flex items-center justify-center hover:bg-primary-700 transition-all shadow-lg shadow-primary-600/20 active:scale-95 group-hover:rotate-12"
+                  class="w-14 h-14 bg-primary-600 text-white rounded-[1.25rem] flex items-center justify-center hover:bg-primary-700 transition-all duration-300 shadow-xl shadow-primary-600/30 active:scale-90 transform hover:-translate-y-1 group-hover:rotate-6"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                 </button>
               </div>
             </div>

@@ -146,11 +146,12 @@
             </div>
 
             <div class="space-y-2">
+
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Saldo em Aberto (R$)</label>
-              <div class="relative">
-                <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 font-bold text-xs">R$</span>
-                <input v-model.number="form.balance" type="number" step="0.01" required class="w-full pl-10 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none font-black text-sm" />
-              </div>
+              <p class="font-bold text-red-600 uppercase tracking-widest ml-1">{{ formatCurrency(form.balance) }}</p>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Subtrair Saldo</label>
+              
+              <input @keydown.enter.prevent="subtractBalance" type="number" step="0.01" required class="w-full pl-5 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none font-black text-sm" />
               <p v-if="editingId" class="text-[9px] text-slate-400 italic">Ao diminuir o saldo, a data de último pagamento será atualizada automaticamente.</p>
             </div>
           </div>
@@ -245,6 +246,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import { useToastStore } from '../store/toast'
 
 const customers = ref([]);
 const totalItems = ref(0);
@@ -257,6 +259,8 @@ const loadingStats = ref(false);
 const editingId = ref(null);
 const selectedCustomer = ref(null);
 const currentStats = ref({});
+
+const toastStore = useToastStore();
 
 const form = reactive({
   name: '',
@@ -356,6 +360,18 @@ const formatDate = (isoStr) => {
     hour: '2-digit',
     minute: '2-digit'
   });
+};
+
+const subtractBalance = event => {
+  form.balance = form.balance - event.target.value;
+  if (form.balance < 0) {
+    toastStore.addToast({
+      type: 'error',
+      message: 'O saldo não pode ser negativo'
+    });
+    form.balance = 0;
+  }
+  event.target.value = '';
 };
 
 onMounted(fetchCustomers);
