@@ -1,0 +1,13 @@
+/**
+ * Configurações do sistema
+ */
+{
+    /**
+     * Margem de lucro (%)
+     */
+    "margin": 100,
+    /**
+     * Permitir que vendedores estornem suas próprias vendas
+     */
+    "allow_salesperson_undo_sale": false
+}

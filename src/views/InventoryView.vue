@@ -1,0 +1,238 @@
+<template>
+  <div class="flex flex-col h-full gap-6 overflow-hidden">
+    <!-- Header Area -->
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Gestão de Estoque</h1>
+        <p class="text-sm text-slate-500 font-medium">Controle seus produtos e níveis de estoque</p>
+      </div>
+      <button 
+        @click="openModal()" 
+        class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-primary-600/20 transition-all active:scale-95"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        Novo Produto
+      </button>
+    </div>
+
+    <!-- Quick Stats & Filters -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
+        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        </div>
+        <div>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total de Produtos</p>
+          <p class="text-2xl font-black text-slate-900 leading-tight">{{ products.length }}</p>
+        </div>
+      </div>
+
+      <div class="md:col-span-2 bg-white p-3 rounded-3xl shadow-sm border border-slate-100 flex items-center">
+        <div class="relative flex-1 group">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+          <input 
+            v-model="search" 
+            @input="fetchProducts"
+            type="text" 
+            placeholder="Pesquisar por nome ou código..." 
+            class="w-full pl-12 pr-4 py-3.5 bg-transparent border-0 outline-none text-slate-700 font-medium placeholder:text-slate-400"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Table Card -->
+    <div class="flex-1 bg-white rounded-[2rem] shadow-sm border border-slate-100 flex flex-col overflow-hidden">
+      <div class="flex-1 overflow-y-auto">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-50">
+              <th class="px-8 py-5">Código</th>
+              <th class="px-8 py-5">Nome do Produto</th>
+              <th class="px-8 py-5">Preço</th>
+              <th class="px-8 py-5">Nível de Estoque</th>
+              <th class="px-8 py-5 text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-50">
+            <tr v-for="product in products" :key="product.id" class="group hover:bg-slate-50/50 transition-all">
+              <td class="px-8 py-5">
+                <span class="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">#{{ product.id }}</span>
+              </td>
+              <td class="px-8 py-5 font-bold text-slate-700">{{ product.name }}</td>
+              <td class="px-8 py-5 font-black text-slate-900">{{ formatCurrency(product.price) }}</td>
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-slate-100 rounded-full max-w-[100px] overflow-hidden">
+                    <div 
+                      class="h-full rounded-full transition-all duration-500" 
+                      :class="product.stock <= 5 ? 'bg-red-500' : 'bg-green-500'"
+                      :style="{ width: Math.min(product.stock * 10, 100) + '%' }"
+                    ></div>
+                  </div>
+                  <span :class="[
+                    'text-xs font-black uppercase tracking-tight px-2 py-1 rounded-lg',
+                    product.stock <= 5 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'
+                  ]">
+                    {{ product.stock }} un
+                  </span>
+                </div>
+              </td>
+              <td class="px-8 py-5 text-right">
+                <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0 translate-x-4">
+                  <button @click="openModal(product)" class="p-2 text-primary-600 hover:bg-primary-50 rounded-xl transition-all" title="Editar">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                  </button>
+                  <button @click="deleteProduct(product.id)" class="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-all" title="Excluir">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="px-8 py-5 bg-slate-50/50 border-t border-slate-100 flex justify-between items-center">
+        <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Página {{ page }}</span>
+        <div class="flex gap-2">
+          <button @click="changePage(-1)" :disabled="page === 1" class="p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all disabled:opacity-30 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button @click="changePage(1)" :disabled="products.length < pageSize" class="p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all disabled:opacity-30 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Redesign -->
+    <div v-if="showModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[70] p-4 animate-in fade-in duration-300">
+      <div class="glass border border-white/20 rounded-[2.5rem] shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-300">
+        <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-white/50">
+          <div>
+            <h2 class="text-xl font-black text-slate-900 tracking-tight">{{ editingId ? 'Editar Produto' : 'Novo Produto' }}</h2>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ editingId ? 'Identificador #' + editingId : 'Preencha os campos abaixo' }}</p>
+          </div>
+          <button @click="showModal = false" class="w-8 h-8 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all font-bold">✕</button>
+        </div>
+        
+        <form @submit.prevent="saveProduct" class="p-8 space-y-6">
+          <div class="space-y-2">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nome do Produto</label>
+            <input v-model="form.name" type="text" placeholder="Ex: Camiseta Oversized" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-bold text-sm" />
+          </div>
+          
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Preço Unitário</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 font-bold text-xs">R$</span>
+                <input v-model.number="form.price" type="number" step="0.01" required class="w-full pl-10 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-black text-sm" />
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Estoque Inicial</label>
+              <input v-model.number="form.stock" type="number" placeholder="0" required class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-black text-sm text-center" />
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3 pt-4">
+            <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-primary-600/20 transition-all active:scale-[0.98]">
+              {{ editingId ? 'Atualizar Produto' : 'Cadastrar Produto' }}
+            </button>
+            <button type="button" @click="showModal = false" class="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-tight">
+              Descartar alterações
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, reactive } from 'vue';
+
+const products = ref([]);
+const search = ref('');
+const page = ref(1);
+const pageSize = 10;
+const showModal = ref(false);
+const editingId = ref(null);
+
+const form = reactive({
+  name: '',
+  price: 0,
+  stock: 0
+});
+
+const fetchProducts = async () => {
+  try {
+    const result = await window.api.getProducts({ 
+      page: page.value, 
+      pageSize, 
+      search: search.value 
+    });
+    products.value = result.data;
+  } catch (err) {
+    console.error('Erro ao carregar estoque:', err);
+  }
+};
+
+const openModal = (product = null) => {
+  if (product) {
+    editingId.value = product.id;
+    form.name = product.name;
+    form.price = product.price;
+    form.stock = product.stock;
+  } else {
+    editingId.value = null;
+    form.name = '';
+    form.price = 0;
+    form.stock = 0;
+  }
+  showModal.value = true;
+};
+
+const saveProduct = async () => {
+  try {
+    let result;
+    if (editingId.value) {
+      result = await window.api.updateProduct({ id: editingId.value, ...form });
+    } else {
+      result = await window.api.createProduct({ ...form });
+    }
+
+    if (result.success) {
+      showModal.value = false;
+      fetchProducts();
+    } else {
+      alert(result.error);
+    }
+  } catch (err) {
+    alert('Erro ao salvar produto');
+  }
+};
+
+const deleteProduct = async (id) => {
+  if (confirm('Deseja realmente excluir este produto?')) {
+    const result = await window.api.deleteProduct(id);
+    if (result.success) fetchProducts();
+  }
+};
+
+const changePage = (delta) => {
+  page.value += delta;
+  fetchProducts();
+};
+
+const formatCurrency = (val) => {
+  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
+
+onMounted(fetchProducts);
+</script>
