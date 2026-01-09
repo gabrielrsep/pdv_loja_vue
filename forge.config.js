@@ -24,6 +24,21 @@ module.exports = {
       config: {},
     },
   ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'gabrielrsep',
+          name: 'pdv_loja_vue'
+        },
+        prerelease: false,
+        draft: false, // Changed to false so releases are published immediately
+        // For private repos, the release assets will still be accessible
+        // to authenticated users with repo access
+      }
+    }
+  ],
   plugins: [
     {
       name: '@electron-forge/plugin-vite',

@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { getStats } from '../database/database';
+import { getStats } from '../database/database.js';
 
 const formatDate = date => {
     const [year, month] = date.split('-');

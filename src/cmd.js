@@ -1,5 +1,5 @@
 import path from 'path';
-import { db } from './database/database';
+import { db } from './database/database.js';
 import bcrypt from 'bcryptjs';
 import fs from 'fs-extra';
 import { app } from 'electron';

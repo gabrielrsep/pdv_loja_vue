@@ -135,3 +135,23 @@ BEGIN
     )
     WHERE id IN (SELECT product_id FROM sale_items WHERE sale_id = NEW.id);
 END;
+
+-- Promotions
+CREATE TABLE IF NOT EXISTS promotions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    discount_type TEXT NOT NULL, -- 'percentage', 'fixed'
+    value REAL NOT NULL,
+    start_date TEXT NOT NULL,
+    end_date TEXT NOT NULL,
+    active INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS promotion_targets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    promotion_id INTEGER NOT NULL,
+    target_type TEXT NOT NULL, -- 'product', 'category'
+    target_id INTEGER NOT NULL,
+    FOREIGN KEY(promotion_id) REFERENCES promotions(id) ON DELETE CASCADE
+);

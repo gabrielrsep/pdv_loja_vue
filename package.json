@@ -5,10 +5,15 @@
   "main": ".vite/build/main.js",
   "author": "Gabriel R. Sepulveda",
   "commercial-name": "PDV Rangel Modas",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabrielrsep/pdv_loja_vue"
+  },
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "publish": "electron-forge publish"
   },
   "keywords": [],
   "license": "ISC",
@@ -17,7 +22,9 @@
     "better-sqlite3": "^12.5.0",
     "chart.js": "^4.5.1",
     "comment-json": "^4.5.1",
+    "electron-log": "^5.4.3",
     "electron-squirrel-startup": "^1.0.1",
+    "electron-updater": "^6.7.3",
     "fs-extra": "^11.3.3",
     "lucide-vue-next": "^0.562.0",
     "pinia": "^3.0.4",
@@ -34,11 +41,12 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.10.2",
     "@electron-forge/plugin-fuses": "^7.10.2",
     "@electron-forge/plugin-vite": "^7.10.2",
+    "@electron-forge/publisher-github": "^7.10.2",
     "@electron/fuses": "^1.8.0",
     "@tailwindcss/vite": "^4.1.18",
     "@vitejs/plugin-vue": "^6.0.3",
+    "dotenv": "^17.2.3",
     "electron": "^39.2.7",
-    "glob": "^13.0.0",
-    "vite-plugin-svgr": "^4.5.0"
+    "glob": "^13.0.0"
   }
 }

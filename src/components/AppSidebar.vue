@@ -75,7 +75,6 @@
           <PackageIcon />
           <span v-show="!collapsed" class="font-medium text-sm whitespace-nowrap">Estoque / Produtos</span>
         </router-link>
-
         <router-link 
           v-if="authStore.isAdmin"
           to="/categories" 
@@ -84,6 +83,16 @@
         >
           <TagIcon />
           <span v-show="!collapsed" class="font-medium text-sm whitespace-nowrap">Categorias</span>
+        </router-link>
+
+        <router-link 
+          v-if="authStore.isAdmin"
+          to="/promotions" 
+          class="group flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+          active-class="bg-primary-50 text-primary-600 shadow-sm"
+        >
+          <TicketPercentIcon />
+          <span v-show="!collapsed" class="font-medium text-sm whitespace-nowrap">Promoções</span>
         </router-link>
 
         <template v-if="authStore.isAdmin">
@@ -165,7 +174,7 @@
 import { ref } from 'vue';
 import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
-import { UsersRoundIcon, SettingsIcon, ChartLineIcon, DollarSignIcon, PackageIcon, HistoryIcon, TagIcon } from 'lucide-vue-next';
+import { UsersRoundIcon, SettingsIcon, ChartLineIcon, DollarSignIcon, PackageIcon, HistoryIcon, TagIcon, TicketPercentIcon } from 'lucide-vue-next';
 
 const authStore = useAuthStore();
 const router = useRouter();

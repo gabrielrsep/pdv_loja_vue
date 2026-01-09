@@ -27,27 +27,27 @@ INSERT INTO categories (id, name, color, icon) VALUES
 (7, 'Bermudas', '#F97316', 'shorts');
 
 -- Insert Products (20 items)
-INSERT INTO products (id, name, category_id, size, price, cost_price, stock, image_path, gender) VALUES 
-(1, 'Camisa Polo Classic Blue', 1, 'M', 89.90, 69.90, 45, NULL, 'Masculino'),
-(2, 'Camisa Polo Classic Black', 1, 'G', 89.90, 69.90, 30, NULL, 'Masculino'),
-(3, 'Calça Jeans Skinny', 2, '42', 149.90, 109.90, 25, NULL, 'Unissex'),
-(4, 'Calça Jeans Slim Fit', 2, '40', 159.90, 119.90, 20, NULL, 'Masculino'),
-(5, 'Tênis Running Air', 3, '41', 299.90, 199.90, 15, NULL, 'Unissex'),
-(6, 'Sapato Social Couro', 3, '42', 249.90, 199.90, 10, NULL, 'Masculino'),
-(7, 'Boné Heritage', 4, 'U', 59.90, 59.90, 50, NULL, 'Unissex'),
-(8, 'Cinto de Couro Marrom', 4, '100', 79.90, 69.90, 15, NULL, 'Masculino'),
-(9, 'Jaqueta Bomber Nylon', 5, 'M', 199.90, 129.90, 12, NULL, 'Unissex'),
-(10, 'Blazer Modern Grey', 5, 'GG', 349.90, 299.90, 8, NULL, 'Masculino'),
-(11, 'Camiseta Basic White', 6, 'P', 39.90, 29.90, 100, NULL, 'Unissex'),
-(12, 'Camiseta Basic Black', 6, 'M', 39.90, 29.90, 80, NULL, 'Unissex'),
-(13, 'Bermuda Cargo Sand', 7, '44', 99.90, 79.90, 22, NULL, 'Masculino'),
-(14, 'Bermuda Sarja Navy', 7, '42', 109.90, 89.90, 18, NULL, 'Masculino'),
-(15, 'Moletom Hoodie Navy', 5, 'G', 129.90, 99.90, 30, NULL, 'Unissex'),
-(16, 'Meia Esportiva (Par)', 4, 'U', 19.90, 19.90, 200, NULL, 'Unissex'),
-(17, 'Carteira de Couro Slim', 4, 'U', 89.90, 69.90, 20, NULL, 'Unissex'),
-(18, 'Vestido Floral Summer', 1, 'M', 159.90, 129.90, 15, NULL, 'Feminino'),
-(19, 'Saia Plissada Black', 2, 'P', 119.90, 109.90, 10, NULL, 'Feminino'),
-(20, 'Blusa de Lã Soft', 5, 'G', 139.90, 129.90, 5, NULL, 'Feminino');
+INSERT INTO products (id, name, category_id, size, price, cost_price, stock, gender) VALUES 
+(1, 'Camisa Polo Classic Blue', 1, 'M', 89.90, 69.90, 45, 'Masculino'),
+(2, 'Camisa Polo Classic Black', 1, 'G', 89.90, 69.90, 30, 'Masculino'),
+(3, 'Calça Jeans Skinny', 2, '42', 149.90, 109.90, 25, 'Unissex'),
+(4, 'Calça Jeans Slim Fit', 2, '40', 159.90, 119.90, 20, 'Masculino'),
+(5, 'Tênis Running Air', 3, '41', 299.90, 199.90, 15, 'Unissex'),
+(6, 'Sapato Social Couro', 3, '42', 249.90, 199.90, 10, 'Masculino'),
+(7, 'Boné Heritage', 4, 'U', 59.90, 59.90, 50, 'Unissex'),
+(8, 'Cinto de Couro Marrom', 4, '100', 79.90, 69.90, 15, 'Masculino'),
+(9, 'Jaqueta Bomber Nylon', 5, 'M', 199.90, 129.90, 12, 'Unissex'),
+(10, 'Blazer Modern Grey', 5, 'GG', 349.90, 299.90, 8, 'Masculino'),
+(11, 'Camiseta Basic White', 6, 'P', 39.90, 29.90, 100, 'Unissex'),
+(12, 'Camiseta Basic Black', 6, 'M', 39.90, 29.90, 80, 'Unissex'),
+(13, 'Bermuda Cargo Sand', 7, '44', 99.90, 79.90, 22, 'Masculino'),
+(14, 'Bermuda Sarja Navy', 7, '42', 109.90, 89.90, 18, 'Masculino'),
+(15, 'Moletom Hoodie Navy', 5, 'G', 129.90, 99.90, 30, 'Unissex'),
+(16, 'Meia Esportiva (Par)', 4, 'U', 19.90, 19.90, 200, 'Unissex'),
+(17, 'Carteira de Couro Slim', 4, 'U', 89.90, 69.90, 20, 'Unissex'),
+(18, 'Vestido Floral Summer', 1, 'M', 159.90, 129.90, 15, 'Feminino'),
+(19, 'Saia Plissada Black', 2, 'P', 119.90, 109.90, 10, 'Feminino'),
+(20, 'Blusa de Lã Soft', 5, 'G', 139.90, 129.90, 5, 'Feminino');
 
 -- Insert Customers (10 items)
 INSERT INTO customers (id, name, age, phone, address, balance, last_payment_date) VALUES 

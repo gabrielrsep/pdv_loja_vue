@@ -7,10 +7,11 @@ import { db } from './database/database.js';
 copyConfig(db);
 
 // Handle CLI commands if any
-import './cmd';
+import './cmd.js';
 
 // Import Service Registrars
 import { registerAllHandlers } from './services/index.js';
+import { initializeUpdateService, checkForUpdatesOnStartup } from './services/update.service.js';
 
 // Register all IPC Handlers
 registerAllHandlers(db);
@@ -39,13 +40,21 @@ const createWindow = () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+
+  return mainWindow;
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow();
+  const mainWindow = createWindow();
+
+  // Initialize update service with main window reference and database
+  initializeUpdateService(mainWindow, db);
+
+  // Check for updates 5 seconds after startup
+  checkForUpdatesOnStartup(5000);
 
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.

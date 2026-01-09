@@ -69,6 +69,110 @@
             </div>
           </div>
         </div>
+
+        <!-- GitHub Updates Configuration Card -->
+        <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-black text-slate-800 leading-tight">Atualizações Automáticas</h2>
+              <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Configure o acesso ao GitHub</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <!-- GitHub Token Input -->
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Token do GitHub</label>
+              <div class="relative">
+                <input 
+                  v-model="localConfig.githubToken" 
+                  :type="showToken ? 'text' : 'password'"
+                  placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                  class="w-full pl-6 pr-14 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all outline-none font-mono text-sm"
+                />
+                <button
+                  @click="showToken = !showToken"
+                  type="button"
+                  class="absolute inset-y-0 right-0 pr-6 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  <svg v-if="!showToken" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                  <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                  </svg>
+                </button>
+              </div>
+              <p class="text-[10px] text-slate-500 font-medium ml-1">
+                Token com permissão de leitura no repositório privado. 
+                <a href="https://github.com/settings/tokens" target="_blank" class="text-purple-600 hover:text-purple-700 font-bold">Criar token →</a>
+              </p>
+            </div>
+
+            <!-- Check on Startup Toggle -->
+            <div class="flex items-center justify-between p-6 bg-slate-50 rounded-[1.5rem] border border-slate-100 group hover:bg-white hover:border-purple-100 transition-all cursor-pointer" @click="localConfig.checkOnStartup = !localConfig.checkOnStartup">
+              <div class="max-w-[70%]">
+                <p class="font-bold text-slate-700">Verificar ao iniciar</p>
+                <p class="text-[10px] text-slate-500 font-medium mt-1 uppercase tracking-tight">Busca atualizações automaticamente quando o app abre</p>
+              </div>
+              <div 
+                class="w-14 h-8 rounded-full transition-all relative p-1"
+                :class="localConfig.checkOnStartup ? 'bg-purple-500' : 'bg-slate-200'"
+              >
+                <div 
+                  class="w-6 h-6 bg-white rounded-full shadow-sm transition-all transform"
+                  :class="localConfig.checkOnStartup ? 'translate-x-6' : 'translate-x-0'"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Info & Updates Card -->
+        <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-black text-slate-800 leading-tight">Sobre o Sistema</h2>
+              <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Versão e atualizações</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Current Version -->
+            <div class="bg-slate-50 rounded-[1.5rem] p-6 border border-slate-100">
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Versão Atual</p>
+              <p class="text-2xl font-black text-slate-800">{{ appVersion }}</p>
+              <p class="text-xs text-slate-500 font-medium mt-1">PDV Rangel Modas</p>
+            </div>
+
+            <!-- Check for Updates Button -->
+            <button
+              @click="handleCheckUpdates"
+              :disabled="checkingUpdates"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-2xl font-black text-base shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+            >
+              <svg v-if="checkingUpdates" class="w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <svg v-else class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              {{ checkingUpdates ? 'Verificando...' : 'Verificar Atualizações' }}
+            </button>
+
+            <p v-if="lastUpdateCheck" class="text-xs text-slate-500 font-medium text-center">
+              Última verificação: {{ lastUpdateCheck }}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -98,13 +202,28 @@ const settingsStore = useSettingsStore();
 // Usamos uma cópia local para não alterar o store global antes de clicar em "Salvar"
 const localConfig = reactive({
   margin: 0,
-  allow_salesperson_undo_sale: false
+  allow_salesperson_undo_sale: false,
+  githubToken: '',
+  checkOnStartup: true,
+  autoDownload: false
 });
+
+// Update-related state
+const appVersion = ref('...');
+const checkingUpdates = ref(false);
+const lastUpdateCheck = ref(null);
+const showToken = ref(false);
 
 onMounted(async () => {
   await settingsStore.fetchConfig();
   // Sincroniza a cópia local com o que vem do banco de dados
   Object.assign(localConfig, settingsStore.config);
+  
+  // Get app version
+  const versionResult = await window.api.getAppVersion();
+  if (versionResult.success) {
+    appVersion.value = versionResult.version;
+  }
 });
 
 async function handleSave() {
@@ -114,5 +233,23 @@ async function handleSave() {
   } else {
     alert('Erro: ' + result.error);
   }
+}
+
+async function handleCheckUpdates() {
+  checkingUpdates.value = true;
+  const result = await window.api.checkForUpdates();
+  checkingUpdates.value = false;
+  
+  // Update last check time
+  const now = new Date();
+  lastUpdateCheck.value = now.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  
+  // The UpdateNotification component will handle showing the result
 }
 </script>

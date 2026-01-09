@@ -9,5 +9,18 @@
     /**
      * Permitir que vendedores estornem suas próprias vendas
      */
-    "allow_salesperson_undo_sale": false
+    "allow_salesperson_undo_sale": false,
+    /**
+     * Token do GitHub para atualizações automáticas (repositório privado)
+     * Deixe vazio para usar variável de ambiente GH_TOKEN
+     */
+    "githubToken": "",
+    /**
+     * Verificar atualizações automaticamente ao iniciar
+     */
+    "checkOnStartup": true,
+    /**
+     * Baixar atualizações automaticamente (não recomendado)
+     */
+    "autoDownload": false
 }

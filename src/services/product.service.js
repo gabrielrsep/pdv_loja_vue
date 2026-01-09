@@ -1,26 +1,17 @@
 import { ipcMain, dialog } from 'electron';
-import path from 'path';
-import fs from 'fs-extra';
 import QRCode from 'qrcode';
+import { readDatabaseFile } from '../database/database.js';
 
 function registerProductHandlers(db) {
     // Search products
     ipcMain.handle('product:search', (_, query) => {
-        let sql = ''
+        let sql = readDatabaseFile('search_products.sql');
         let params = []
         if (!isNaN(query) && query.trim() !== '') {
-            sql = `
-                SELECT p.*, c.name as category_name, c.color as category_color 
-                FROM products p
-                LEFT JOIN categories c ON p.category_id = c.id
-                WHERE p.id = ?`;
+            sql += ` WHERE p.id = ?`;
             params = [query]
         } else {
-            sql = `
-                SELECT p.*, c.name as category_name, c.color as category_color 
-                FROM products p
-                LEFT JOIN categories c ON p.category_id = c.id
-                WHERE p.name LIKE ?`;
+            sql += ` WHERE p.name LIKE ?`;
             params = [`%${query}%`]
         }
         return db.prepare(sql).all(params)

@@ -65,6 +65,18 @@ const saveConfig = (newConfig) => {
         newConfig.allow_salesperson_undo_sale = Boolean(newConfig.allow_salesperson_undo_sale);
     }
 
+    if (newConfig.githubToken !== undefined) {
+        newConfig.githubToken = String(newConfig.githubToken);
+    }
+
+    if (newConfig.checkOnStartup !== undefined) {
+        newConfig.checkOnStartup = Boolean(newConfig.checkOnStartup);
+    }
+
+    if (newConfig.autoDownload !== undefined) {
+        newConfig.autoDownload = Boolean(newConfig.autoDownload);
+    }
+
     const updatedConfig = assign(currentConfig, newConfig);
     writeFileSync(appData('config.jsonc'), stringify(updatedConfig, null, 4));
     return updatedConfig;

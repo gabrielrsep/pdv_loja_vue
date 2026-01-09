@@ -49,4 +49,37 @@ contextBridge.exposeInMainWorld('api', {
     getUsers: () => ipcRenderer.invoke('user:get-all'),
     saveUser: (userData) => ipcRenderer.invoke('user:save', userData),
     deleteUser: (id) => ipcRenderer.invoke('user:delete', id),
+    // Promotions
+    getPromotions: () => ipcRenderer.invoke('promotion:get-all'),
+    getPromotion: (id) => ipcRenderer.invoke('promotion:get-by-id', id),
+    savePromotion: (promotion) => ipcRenderer.invoke('promotion:save', promotion),
+    deletePromotion: (id) => ipcRenderer.invoke('promotion:delete', id),
+    togglePromotionStatus: (id) => ipcRenderer.invoke('promotion:toggle-active', id),
+
+    // Update API
+    checkForUpdates: () => ipcRenderer.invoke('update:check-for-updates'),
+    downloadUpdate: () => ipcRenderer.invoke('update:download'),
+    installUpdate: () => ipcRenderer.invoke('update:install'),
+    getUpdateStatus: () => ipcRenderer.invoke('update:get-status'),
+    getAppVersion: () => ipcRenderer.invoke('update:get-version'),
+
+    // Update event listeners
+    onUpdateChecking: (callback) => {
+        ipcRenderer.on('update-checking', (_, data) => callback(data));
+    },
+    onUpdateAvailable: (callback) => {
+        ipcRenderer.on('update-available', (_, data) => callback(data));
+    },
+    onUpdateNotAvailable: (callback) => {
+        ipcRenderer.on('update-not-available', (_, data) => callback(data));
+    },
+    onUpdateDownloadProgress: (callback) => {
+        ipcRenderer.on('update-download-progress', (_, data) => callback(data));
+    },
+    onUpdateDownloaded: (callback) => {
+        ipcRenderer.on('update-downloaded', (_, data) => callback(data));
+    },
+    onUpdateError: (callback) => {
+        ipcRenderer.on('update-error', (_, data) => callback(data));
+    },
 });

@@ -4,7 +4,10 @@ export const useSettingsStore = defineStore('settings', {
     state: () => ({
         config: {
             margin: 0,
-            allow_salesperson_undo_sale: false
+            allow_salesperson_undo_sale: false,
+            githubToken: '',
+            checkOnStartup: true,
+            autoDownload: false
         },
         loading: false
     }),

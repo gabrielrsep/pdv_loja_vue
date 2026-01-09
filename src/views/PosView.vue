@@ -65,9 +65,28 @@
               <div class="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between relative z-10">
                 <div class="flex flex-col">
                   <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em] mb-1">Preço</span>
-                  <div class="flex items-baseline gap-1">
+                  
+                  <!-- Sem promoção -->
+                  <div v-if="product.promotional_price == product.price" class="flex items-baseline gap-1">
                     <span class="text-xs font-black text-slate-900">R$</span>
                     <span class="font-black text-slate-900 text-2xl tracking-tighter">{{ product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+                  </div>
+                  
+                  <!-- Com promoção -->
+                  <div v-else class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <div class="flex items-baseline gap-1 opacity-60">
+                        <span class="text-[10px] font-black text-slate-500">DE R$</span>
+                        <span class="font-black text-slate-500 text-sm line-through tracking-tighter">{{ showPrice(product.price) }}</span>
+                      </div>
+                      <span class="px-2 py-0.5 bg-gradient-to-r from-red-500 to-orange-500 text-white text-[9px] font-black uppercase tracking-wider rounded-full shadow-lg">
+                        -{{ calculateDiscount(product.price, product.promotional_price) }}%
+                      </span>
+                    </div>
+                    <div class="flex items-baseline gap-1">
+                      <span class="text-xs font-black text-primary-600">POR R$</span>
+                      <span class="font-black text-primary-600 text-2xl tracking-tighter">{{ showPrice(product.promotional_price) }}</span>
+                    </div>
                   </div>
                 </div>
                 
@@ -113,7 +132,7 @@
             <div class="flex justify-between items-start">
               <div>
                 <span class="font-bold text-slate-800 text-lg leading-tight">{{ item.name }}</span>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-tight mt-1">{{ formatCurrency(item.price) }} / cada</p>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-tight mt-1">{{ showPrice(item.price) }} / cada</p>
               </div>
               <button @click="removeFromCart(index)" class="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all opacity-0 group-hover:opacity-100">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -125,7 +144,7 @@
                 <span class="w-10 text-center font-black text-slate-900 text-lg">{{ item.quantity }}</span>
                 <button @click="updateQuantity(index, 1)" class="w-8 h-8 flex items-center justify-center hover:bg-slate-50 rounded-xl text-slate-400 hover:text-primary-600 transition-all font-black text-xl">+</button>
               </div>
-              <span class="font-black text-slate-900 text-xl">{{ formatCurrency(item.subtotal) }}</span>
+              <span class="font-black text-slate-900 text-xl">{{ showPrice(item.subtotal) }}</span>
             </div>
           </div>
           
@@ -163,7 +182,7 @@
 
           <div class="flex justify-between items-center py-4 border-t border-slate-200/50">
             <span class="text-slate-400 font-black uppercase tracking-widest text-xs">Total a Pagar</span>
-            <span class="text-4xl font-black text-primary-600 tracking-tighter">{{ formatCurrency(total) }}</span>
+            <span class="text-4xl font-black text-primary-600 tracking-tighter">{{ showPrice(total) }}</span>
           </div>
 
           <button 
@@ -201,6 +220,18 @@ const loadCustomers = async () => {
   }
 };
 
+const calculateDiscount = (price, promotional_price) => {
+  return ((1 - (promotional_price / price)) * 100).toFixed(2)
+};
+
+const showPrice = price => {
+  function truncarDecimais(valor, casas) {
+    const multiplicador = Math.pow(10, casas);
+    return Math.floor(valor * multiplicador) / multiplicador;
+  }
+  return truncarDecimais(price, 1).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 // Busca de produtos com debounce
 const handleSearch = () => {
   if (!searchQuery.value) {
@@ -217,8 +248,13 @@ const handleSearch = () => {
   }, 300);
 };
 
+const effectivePrice = product => {
+  return product.promotional_price != product.price ? product.promotional_price : product.price;
+}
+
 // Adicionar item ao carrinho
-const addToCart = (product) => {
+const addToCart = product => {
+  const effective_price = effectivePrice(product);
   const existingItem = cart.value.find(item => item.id === product.id);
   if (existingItem) {
     if (existingItem.quantity >= product.stock) {
@@ -235,9 +271,9 @@ const addToCart = (product) => {
     cart.value.push({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: effective_price,
       quantity: 1,
-      subtotal: product.price,
+      subtotal: effective_price,
       stock: product.stock
     });
   }
@@ -263,10 +299,6 @@ const removeFromCart = (index) => {
 const total = computed(() => {
   return cart.value.reduce((acc, item) => acc + item.subtotal, 0);
 });
-
-const formatCurrency = (value) => {
-  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-};
 
 const checkout = async () => {
   if (cart.value.length === 0) return;
