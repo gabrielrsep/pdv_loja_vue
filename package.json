@@ -1,6 +1,6 @@
 {
   "name": "pdv_loja",
-  "version": "1.0.0",
+  "version": "1.0.0-beta",
   "description": "PDV Rangel Modas",
   "main": ".vite/build/main.js",
   "author": "Gabriel R. Sepulveda",
@@ -42,6 +42,7 @@
     "@electron-forge/plugin-fuses": "^7.10.2",
     "@electron-forge/plugin-vite": "^7.10.2",
     "@electron-forge/publisher-github": "^7.10.2",
+    "@electron-forge/maker-rpm": "^7.10.2",
     "@electron/fuses": "^1.8.0",
     "@tailwindcss/vite": "^4.1.18",
     "@vitejs/plugin-vue": "^6.0.3",

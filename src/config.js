@@ -2,6 +2,7 @@ import { parse, stringify, assign } from 'comment-json';
 import { readFileSync, copyFileSync, writeFileSync } from 'fs-extra';
 import path from 'path';
 import { app } from 'electron';
+import { scryptSync, createDecipheriv } from 'crypto';
 
 const devPath = path.join(process.cwd(), 'src');
 

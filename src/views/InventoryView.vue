@@ -213,7 +213,8 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
-import { useSettingsStore } from '../store/settings';
+import { useSettingsStore } from '@/store/settings';
+import { formatCurrency } from '@/utils';
 
 const settingsStore = useSettingsStore();
 
@@ -308,10 +309,6 @@ const deleteProduct = async (id) => {
 const changePage = (delta) => {
   page.value += delta;
   fetchProducts();
-};
-
-const formatCurrency = (val) => {
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
 onMounted(async () => {

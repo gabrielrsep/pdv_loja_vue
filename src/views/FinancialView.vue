@@ -144,10 +144,10 @@
                <div class="w-2 h-2 rounded-full bg-blue-500 group-hover:scale-150 transition-transform"></div>
                <span class="text-xs font-bold text-slate-700">Ir para o Mês Atual</span>
             </button>
-            <div class="p-4 bg-orange-50 rounded-2xl border border-orange-100 mt-4">
+            <!-- <div class="p-4 bg-orange-50 rounded-2xl border border-orange-100 mt-4">
               <p class="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-1">Atenção</p>
               <p class="text-[11px] text-orange-700 font-medium leading-relaxed">Você possui lançamentos pendentes que vencem hoje.</p>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -219,6 +219,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue';
+import { formatCurrency } from '@/utils';
 
 const getNowMonth = () => {
     const d = new Date();
@@ -302,8 +303,6 @@ const deleteItem = async (id) => {
         if (result.success) fetchData();
     }
 }
-
-const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
 const formatDay = (dateStr) => {
     return new Date(dateStr + 'T12:00:00').getDate();

@@ -68,16 +68,22 @@ function registerSalesHandlers(db) {
     });
 
     // Get recent sales
-    ipcMain.handle('sales:get-recent', () => {
-        const sql = `
+    ipcMain.handle('sales:get-recent', (_, customerId) => {
+        let sql = `
             SELECT s.id, s.total, s.date, c.name as customer_name 
             FROM sales s
             LEFT JOIN customers c ON s.customer_id = c.id
             WHERE s.deleted_at IS NULL
-            ORDER BY s.date DESC 
-            LIMIT 30
         `;
-        return db.prepare(sql).all();
+
+        const params = [];
+        if (customerId) {
+            sql += ` AND s.customer_id = ?`;
+            params.push(customerId);
+        }
+        sql += ` ORDER BY s.date DESC LIMIT 30`;
+
+        return db.prepare(sql).all(params);
     });
 
     // Get sale items

@@ -1,10 +1,6 @@
 import { ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { getConfig } from '../config';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 
 // Configure logging
@@ -14,36 +10,6 @@ autoUpdater.logger.transports.file.level = 'info';
 // Disable auto-download - we'll control it manually
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
-
-/**
- * Get GitHub token from multiple sources (priority order)
- * 1. Environment variable GH_TOKEN (development)
- * 2. System config.jsonc (production)
- * 3. null (will fail gracefully)
- */
-function getGitHubToken() {
-    // 1. Environment variable (highest priority)
-    if (process.env.GH_TOKEN) {
-        log.info('Using GitHub token from environment variable');
-        return process.env.GH_TOKEN;
-    }
-
-    // 2. System config file (config.jsonc)
-    try {
-        const config = getConfig()
-        return config.githubToken;
-    } catch (err) {
-        log.error('Error reading GitHub token from config:', err);
-    }
-
-    // 3. No token available
-    log.warn('No GitHub token found. Updates from private repository will fail.');
-    log.warn('Set GH_TOKEN environment variable or configure githubToken in system settings');
-    return null;
-}
-
-// Note: Token configuration will be done in initializeUpdateService
-// after we have access to the database
 
 let mainWindow = null;
 let updateStatus = {
@@ -61,29 +27,15 @@ let updateStatus = {
  */
 export function initializeUpdateService(window) {
     mainWindow = window;
-    console.log(process.env.GH_TOKEN);
 
-    // Configure feed URL with token from config
-    const token = getGitHubToken();
-    if (token) {
-        autoUpdater.setFeedURL({
-            provider: 'github',
-            owner: 'gabrielrsep',
-            repo: 'pdv_loja_vue',
-            private: true,
-            token: token
-        });
-        log.info('Auto-updater configured for private repository with token');
-    } else {
-        // Still configure, but it will fail when checking for updates
-        autoUpdater.setFeedURL({
-            provider: 'github',
-            owner: 'gabrielrsep',
-            repo: 'pdv_loja_vue',
-            private: true
-        });
-        log.warn('Auto-updater configured WITHOUT token - updates will fail');
-    }
+    // Configure feed URL for public repository
+    autoUpdater.setFeedURL({
+        provider: 'github',
+        owner: 'gabrielrsep',
+        repo: 'pdv_loja_vue',
+        private: false
+    });
+    log.info('Auto-updater configured for public repository');
 
     setupAutoUpdaterEvents();
 }

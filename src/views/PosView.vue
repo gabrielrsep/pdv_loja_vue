@@ -199,6 +199,7 @@
 </template>
 
 <script setup>
+import { formatCurrency } from '@/utils';
 import { ref, computed, onMounted } from 'vue';
 
 // Estado migrado do Alpine
@@ -229,7 +230,7 @@ const showPrice = price => {
     const multiplicador = Math.pow(10, casas);
     return Math.floor(valor * multiplicador) / multiplicador;
   }
-  return truncarDecimais(price, 1).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return formatCurrency(truncarDecimais(price, 1))
 }
 
 // Busca de produtos com debounce

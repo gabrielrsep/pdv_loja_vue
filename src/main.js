@@ -3,6 +3,7 @@ import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { copyConfig } from './config.js';
 import { db } from './database/database.js';
+import { getConfig } from './config.js';
 
 copyConfig(db);
 
@@ -51,10 +52,13 @@ app.whenReady().then(() => {
   const mainWindow = createWindow();
 
   // Initialize update service with main window reference and database
-  initializeUpdateService(mainWindow, db);
+  initializeUpdateService(mainWindow);
 
-  // Check for updates 5 seconds after startup
-  checkForUpdatesOnStartup(5000);
+  const { checkOnStartup } = getConfig();
+
+  if (checkOnStartup) {
+    checkForUpdatesOnStartup(5000);
+  }
 
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.

@@ -36,7 +36,7 @@
             v-model="search" 
             @input="fetchCustomers"
             type="text" 
-            placeholder="Pesquisar por nome, telefone ou endereço..." 
+            placeholder="Pesquisar por nome, ou ID..." 
             class="w-full pl-12 pr-4 py-3.5 bg-transparent border-0 outline-none text-slate-700 font-medium placeholder:text-slate-400"
           />
         </div>
@@ -246,7 +246,8 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { useToastStore } from '../store/toast'
+import { useToastStore } from '@/store/toast'
+import { formatCurrency } from '@/utils';
 
 const customers = ref([]);
 const totalItems = ref(0);
@@ -345,10 +346,6 @@ const deleteCustomer = async (id) => {
 const changePage = (delta) => {
   page.value += delta;
   fetchCustomers();
-};
-
-const formatCurrency = (val) => {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 };
 
 const formatDate = (isoStr) => {

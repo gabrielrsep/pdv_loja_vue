@@ -192,7 +192,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../store/auth';
+import { useAuthStore } from '@/store/auth';
+import { formatCurrency } from '@/utils';
 
 const authStore = useAuthStore();
 const sales = ref([]);
@@ -235,13 +236,9 @@ const viewDetails = async (sale) => {
   }
 };
 
-const formatCurrency = (value) => {
-  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-};
-
 const formatDateTime = (isoString) => {
   const date = new Date(isoString);
-  return date.toLocaleString('pt-BR');
+  return date.toLocaleString('pt-BR').slice(0, -3);
 };
 
 const confirmUndo = (sale) => {

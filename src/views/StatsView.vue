@@ -160,6 +160,7 @@ import {
   Chart as ChartJS, Title, Tooltip, Legend, LineElement, 
   CategoryScale, LinearScale, PointElement, Filler 
 } from 'chart.js';
+import { formatCurrency } from '@/utils';
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement, Filler);
 
@@ -280,11 +281,6 @@ async function fetchData() {
     console.error('Erro ao carregar estatísticas:', err);
   }
 }
-
-const formatCurrency = (val) => {
-  if (val === undefined || val === null) return 'R$ 0,00';
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-};
 
 onMounted(fetchData);
 </script>
