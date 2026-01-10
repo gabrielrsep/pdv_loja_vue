@@ -2,7 +2,6 @@ import { parse, stringify, assign } from 'comment-json';
 import { readFileSync, copyFileSync, writeFileSync } from 'fs-extra';
 import path from 'path';
 import { app } from 'electron';
-import { scryptSync, createDecipheriv } from 'crypto';
 
 const devPath = path.join(process.cwd(), 'src');
 
@@ -19,10 +18,9 @@ const getResourcesPath = (...paths) => {
      * os arquivos em produção estão na rais do process.resourcesPath
      */
     if (app.isPackaged) {
-        paths = paths.at(-1);
+        return path.join(process.resourcesPath, paths.at(-1));
     }
-    const base = app.isPackaged ? process.resourcesPath : devPath
-    return path.join(base, ...paths)
+    return path.join(devPath, ...paths)
 }
 
 const appData = (...paths) => {

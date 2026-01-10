@@ -1,9 +1,21 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const { globSync } = require('glob')
+const { resolve, join, dirname } = require('path');
+const { mkdirs, copy } = require('fs-extra');
 
+const extraResources = globSync('src/database/**/*.sql', { nodir: true, ignore: ['src/database/test-data.sql'] })
+
+/**
+ * @type {import('@electron-forge/shared-types').ForgeConfig}
+ */
 module.exports = {
   packagerConfig: {
     asar: true,
+    extraResource: [
+      ...extraResources,
+      'src/config.jsonc'
+    ]
   },
   rebuildConfig: {},
   makers: [
@@ -78,4 +90,29 @@ module.exports = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
+  hooks: {
+    // The call to this hook is mandatory for better-sqlite3 to work once the app built
+    async packageAfterCopy(_forgeConfig, buildPath) {
+      const requiredNativePackages = ["better-sqlite3", "bindings", "file-uri-to-path"];
+
+      // __dirname isn't accessible from here
+      const dirnamePath = ".";
+      const sourceNodeModulesPath = resolve(dirnamePath, "node_modules");
+      const destNodeModulesPath = resolve(buildPath, "node_modules");
+
+      // Copy all asked packages in /node_modules directory inside the asar archive
+      await Promise.all(
+        requiredNativePackages.map(async (packageName) => {
+          const sourcePath = join(sourceNodeModulesPath, packageName);
+          const destPath = join(destNodeModulesPath, packageName);
+
+          await mkdirs(dirname(destPath));
+          await copy(sourcePath, destPath, {
+            recursive: true,
+            preserveTimestamps: true
+          });
+        })
+      );
+    }
+  }
 };
