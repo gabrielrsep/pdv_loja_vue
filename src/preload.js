@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
+    getAppInfo: () => ipcRenderer.invoke('app-info:get'),
     getCurrentView: () => ipcRenderer.invoke('view:get-current'),
     setCurrentView: (view) => ipcRenderer.invoke('view:set-current', view),
     getViewHtml: () => ipcRenderer.invoke('view:get-html'),
@@ -24,7 +25,7 @@ contextBridge.exposeInMainWorld('api', {
 
     createSale: (saleData) => ipcRenderer.invoke('sale:create', saleData),
     undoSale: (id, authData) => ipcRenderer.invoke('sale:undo', id, authData),
-    getRecentSales: () => ipcRenderer.invoke('sales:get-recent'),
+    getRecentSales: (customerId) => ipcRenderer.invoke('sales:get-recent', customerId),
     getSaleItems: (saleId) => ipcRenderer.invoke('sale:get-items', saleId),
     getCustomers: (params) => ipcRenderer.invoke('customer:get-all', params),
     saveCustomer: (customer) => ipcRenderer.invoke('customer:save', customer),

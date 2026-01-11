@@ -3,6 +3,7 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 const { globSync } = require('glob')
 const { resolve, join, dirname } = require('path');
 const { mkdirs, copy } = require('fs-extra');
+require('dotenv').config();
 
 const extraResources = globSync('src/database/**/*.sql', { nodir: true, ignore: ['src/database/test-data.sql'] })
 

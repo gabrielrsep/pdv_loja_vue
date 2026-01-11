@@ -1,9 +1,8 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-import { copyConfig } from './config.js';
+import { copyConfig, getConfig } from './config.js';
 import { db } from './database/database.js';
-import { getConfig } from './config.js';
 
 copyConfig(db);
 
@@ -11,11 +10,16 @@ copyConfig(db);
 import './cmd.js';
 
 // Import Service Registrars
-import { registerAllHandlers } from './services/index.js';
+import packageJson from '../package.json';
+import { registerAllHandlers } from './services';
 import { initializeUpdateService, checkForUpdatesOnStartup } from './services/update.service.js';
 
 // Register all IPC Handlers
 registerAllHandlers(db);
+
+ipcMain.handle('app-info:get', () => {
+  return { version: packageJson.version, author: packageJson.author }
+});
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -31,6 +35,8 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+
+  mainWindow.setMenu(null);
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
