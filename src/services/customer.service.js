@@ -29,7 +29,7 @@ function registerCustomerHandlers(db) {
 
     // Save customer
     ipcMain.handle('customer:save', async (event, customer) => {
-        const { id, name, age, phone, address, balance } = customer;
+        const { id, name, age, phone, address, balance, observations } = customer;
 
         if (id) {
             // Fetch current balance to check for payment
@@ -42,13 +42,13 @@ function registerCustomerHandlers(db) {
             }
 
             // Update
-            const sql = `UPDATE customers SET name = ?, age = ?, phone = ?, address = ?, balance = ?, last_payment_date = ? WHERE id = ?`;
-            db.prepare(sql).run([name, age, phone, address, balance, finalLastPaymentDate, id]);
+            const sql = `UPDATE customers SET name = ?, age = ?, phone = ?, address = ?, balance = ?, last_payment_date = ?, observations = ? WHERE id = ?`;
+            db.prepare(sql).run([name, age, phone, address, balance, finalLastPaymentDate, observations, id]);
             return { success: true, id };
         } else {
             // Insert
-            const sql = `INSERT INTO customers (name, age, phone, address, balance) VALUES (?, ?, ?, ?, ?)`;
-            const { lastInsertRowid } = db.prepare(sql).run([name, age, phone, address, balance]);
+            const sql = `INSERT INTO customers (name, age, phone, address, balance, observations) VALUES (?, ?, ?, ?, ?, ?)`;
+            const { lastInsertRowid } = db.prepare(sql).run([name, age, phone, address, balance, observations]);
             return { success: true, id: lastInsertRowid };
         }
     });
@@ -76,8 +76,8 @@ function registerCustomerHandlers(db) {
         `;
         const basicStats = db.prepare(basicStatsSql).get(customerId);
 
-        // Fetch last_payment_date directly from customer table
-        const customerRow = db.prepare("SELECT last_payment_date FROM customers WHERE id = ?").get(customerId);
+        // Fetch last_payment_date and observations directly from customer table
+        const customerRow = db.prepare("SELECT last_payment_date, observations FROM customers WHERE id = ?").get(customerId);
 
         // Top 3 Products
         const topProductsSql = `
@@ -95,6 +95,7 @@ function registerCustomerHandlers(db) {
         return {
             ...basicStats,
             lastPayment: customerRow ? customerRow.last_payment_date : null,
+            observations: customerRow ? customerRow.observations : '',
             topProducts
         };
     });

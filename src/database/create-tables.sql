@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS products (
     stock INTEGER NOT NULL,
     -- image_path TEXT,
     gender TEXT, -- Masculino, Feminino, Unissex (Opcional)
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(category_id) REFERENCES categories(id)
 );
 
@@ -26,7 +27,9 @@ CREATE TABLE IF NOT EXISTS customers (
     phone TEXT,
     address TEXT,
     balance REAL NOT NULL DEFAULT 0,
-    last_payment_date TEXT
+    last_payment_date TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    observations TEXT
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -36,7 +39,7 @@ CREATE TABLE IF NOT EXISTS users (
     role TEXT NOT NULL DEFAULT 'vendedor', -- administrador, vendedor, gerente
     recovery_question TEXT NOT NULL,
     recovery_answer TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS sales (

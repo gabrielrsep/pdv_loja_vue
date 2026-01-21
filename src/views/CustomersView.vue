@@ -1,3 +1,137 @@
+<script setup>
+import { ref, reactive, onMounted } from 'vue';
+import { useToastStore } from '@/store/toast'
+import { formatCurrency } from '@/utils';
+
+const customers = ref([]);
+const totalItems = ref(0);
+const search = ref('');
+const page = ref(1);
+const pageSize = 8;
+const showModal = ref(false);
+const statsModal = ref(false);
+const loadingStats = ref(false);
+const editingId = ref(null);
+const selectedCustomer = ref(null);
+const currentStats = ref({});
+
+const toastStore = useToastStore();
+
+const form = reactive({
+  name: '',
+  phone: '',
+  age: null,
+  address: '',
+  balance: 0,
+  observations: ''
+});
+
+const fetchCustomers = async () => {
+  try {
+    const result = await window.api.getCustomers({
+      page: page.value,
+      pageSize,
+      search: search.value
+    });
+    customers.value = result.data;
+    totalItems.value = result.total;
+  } catch (err) {
+    console.error('Erro ao carregar clientes:', err);
+  }
+};
+
+const openModal = (c = null) => {
+  if (c) {
+    editingId.value = c.id;
+    form.name = c.name;
+    form.phone = c.phone || '';
+    form.age = c.age;
+    form.address = c.address || '';
+    form.balance = c.balance;
+    form.observations = c.observations || '';
+  } else {
+    editingId.value = null;
+    form.name = '';
+    form.phone = '';
+    form.age = null;
+    form.address = '';
+    form.balance = 0;
+    form.observations = '';
+  }
+  showModal.value = true;
+};
+
+const showStats = async (c) => {
+  selectedCustomer.value = c;
+  loadingStats.value = true;
+  statsModal.value = true;
+  try {
+    currentStats.value = await window.api.getCustomerStats(c.id);
+  } catch (err) {
+    console.error('Erro ao carregar estatísticas:', err);
+  } finally {
+    loadingStats.value = false;
+  }
+};
+
+const saveCustomer = async () => {
+  try {
+    const result = await window.api.saveCustomer({
+      id: editingId.value,
+      ...form
+    });
+
+    if (result.success) {
+      showModal.value = false;
+      fetchCustomers();
+    } else {
+      alert(result.error || 'Erro ao salvar cliente');
+    }
+  } catch (err) {
+    alert('Erro na comunicação com o sistema');
+  }
+};
+
+const deleteCustomer = async (id) => {
+  if (confirm('Deseja excluir permanentemente este cliente? Esta ação não afetará vendas passadas, mas o cliente será removido da base.')) {
+    const result = await window.api.deleteCustomer(id);
+    if (result.success) fetchCustomers();
+    else alert(result.error);
+  }
+};
+
+const changePage = (delta) => {
+  page.value += delta;
+  fetchCustomers();
+};
+
+const formatDate = (isoStr) => {
+  if (!isoStr) return '';
+  return new Date(isoStr).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+const subtractBalance = event => {
+  form.balance = form.balance - event.target.value;
+  if (form.balance < 0) {
+    toastStore.addToast({
+      type: 'error',
+      message: 'O saldo não pode ser negativo'
+    });
+    form.balance = 0;
+  }
+  event.target.value = '';
+};
+
+onMounted(fetchCustomers);
+</script>
+
+
 <template>
   <div class="flex flex-col h-full gap-6 overflow-hidden">
     <!-- Header Area -->
@@ -146,12 +280,17 @@
             </div>
 
             <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Observações</label>
+              <textarea v-model="form.observations" placeholder="Observações sobre o cliente..." rows="3" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none font-medium text-sm resize-none"></textarea>
+            </div>
+
+            <div class="space-y-2">
 
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Saldo em Aberto (R$)</label>
               <p class="font-bold text-red-600 uppercase tracking-widest ml-1">{{ formatCurrency(form.balance) }}</p>
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Subtrair Saldo</label>
               
-              <input @keydown.enter.prevent="subtractBalance" type="number" step="0.01" required class="w-full pl-5 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none font-black text-sm" />
+              <input @keydown.enter.prevent="subtractBalance" type="number" step="0.01" class="w-full pl-5 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none font-black text-sm" />
               <p v-if="editingId" class="text-[9px] text-slate-400 italic">Ao diminuir o saldo, a data de último pagamento será atualizada automaticamente.</p>
             </div>
           </div>
@@ -220,6 +359,10 @@
               <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Último Pagamento</p>
               <p class="text-sm font-bold text-emerald-600">{{ currentStats.lastPayment ? formatDate(currentStats.lastPayment) : 'Nenhum registro' }}</p>
             </div>
+            <div class="space-y-1 col-span-2" v-if="currentStats.observations">
+              <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Observações</p>
+              <p class="text-sm font-medium text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">{{ currentStats.observations }}</p>
+            </div>
           </div>
 
           <!-- Top Products -->
@@ -244,132 +387,3 @@
   </div>
 </template>
 
-<script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useToastStore } from '@/store/toast'
-import { formatCurrency } from '@/utils';
-
-const customers = ref([]);
-const totalItems = ref(0);
-const search = ref('');
-const page = ref(1);
-const pageSize = 8;
-const showModal = ref(false);
-const statsModal = ref(false);
-const loadingStats = ref(false);
-const editingId = ref(null);
-const selectedCustomer = ref(null);
-const currentStats = ref({});
-
-const toastStore = useToastStore();
-
-const form = reactive({
-  name: '',
-  phone: '',
-  age: null,
-  address: '',
-  balance: 0
-});
-
-const fetchCustomers = async () => {
-  try {
-    const result = await window.api.getCustomers({
-      page: page.value,
-      pageSize,
-      search: search.value
-    });
-    customers.value = result.data;
-    totalItems.value = result.total;
-  } catch (err) {
-    console.error('Erro ao carregar clientes:', err);
-  }
-};
-
-const openModal = (c = null) => {
-  if (c) {
-    editingId.value = c.id;
-    form.name = c.name;
-    form.phone = c.phone || '';
-    form.age = c.age;
-    form.address = c.address || '';
-    form.balance = c.balance;
-  } else {
-    editingId.value = null;
-    form.name = '';
-    form.phone = '';
-    form.age = null;
-    form.address = '';
-    form.balance = 0;
-  }
-  showModal.value = true;
-};
-
-const showStats = async (c) => {
-  selectedCustomer.value = c;
-  loadingStats.value = true;
-  statsModal.value = true;
-  try {
-    currentStats.value = await window.api.getCustomerStats(c.id);
-  } catch (err) {
-    console.error('Erro ao carregar estatísticas:', err);
-  } finally {
-    loadingStats.value = false;
-  }
-};
-
-const saveCustomer = async () => {
-  try {
-    const result = await window.api.saveCustomer({
-      id: editingId.value,
-      ...form
-    });
-
-    if (result.success) {
-      showModal.value = false;
-      fetchCustomers();
-    } else {
-      alert(result.error || 'Erro ao salvar cliente');
-    }
-  } catch (err) {
-    alert('Erro na comunicação com o sistema');
-  }
-};
-
-const deleteCustomer = async (id) => {
-  if (confirm('Deseja excluir permanentemente este cliente? Esta ação não afetará vendas passadas, mas o cliente será removido da base.')) {
-    const result = await window.api.deleteCustomer(id);
-    if (result.success) fetchCustomers();
-    else alert(result.error);
-  }
-};
-
-const changePage = (delta) => {
-  page.value += delta;
-  fetchCustomers();
-};
-
-const formatDate = (isoStr) => {
-  if (!isoStr) return '';
-  return new Date(isoStr).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
-
-const subtractBalance = event => {
-  form.balance = form.balance - event.target.value;
-  if (form.balance < 0) {
-    toastStore.addToast({
-      type: 'error',
-      message: 'O saldo não pode ser negativo'
-    });
-    form.balance = 0;
-  }
-  event.target.value = '';
-};
-
-onMounted(fetchCustomers);
-</script>
