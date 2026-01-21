@@ -54,7 +54,7 @@ function registerCustomerHandlers(db) {
     });
 
     // Delete customer
-    ipcMain.handle('customer:delete', (event, id) => {
+    ipcMain.handle('customer:delete', (_, id) => {
         try {
             db.prepare("DELETE FROM customers WHERE id = ?").run(id);
             return { success: true };

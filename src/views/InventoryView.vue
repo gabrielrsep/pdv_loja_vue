@@ -103,6 +103,9 @@
                   <button @click="openModal(product)" class="p-2 text-primary-600 hover:bg-primary-50 rounded-xl transition-all" title="Editar">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                   </button>
+                  <button @click="generateProductQr(product)" class="p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-all" title="Gerar Etiqueta QR">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+                  </button>
                   <button @click="deleteProduct(product.id)" class="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-all" title="Excluir">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                   </button>
@@ -151,6 +154,11 @@
                 <option :value="null">Sem Categoria</option>
                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
               </select>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tamanho (Opcional)</label>
+              <input v-model="form.size" type="text" placeholder="Ex: M, 42, Único" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none font-bold text-sm" />
             </div>
 
             <div class="space-y-2">
@@ -208,6 +216,39 @@
         </form>
       </div>
     </div>
+
+    <!-- QR Code Modal -->
+    <div v-if="showQrModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[80] p-4 animate-in fade-in duration-300">
+      <div class="glass border border-white/20 rounded-[2.5rem] shadow-2xl max-w-sm w-full overflow-hidden animate-in zoom-in-95 duration-300">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white/50">
+          <div>
+            <h2 class="text-lg font-black text-slate-900 tracking-tight">Etiqueta do Produto</h2>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Visualização de Impressão</p>
+          </div>
+          <button @click="closeQrModal" class="w-8 h-8 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all font-bold">✕</button>
+        </div>
+        
+        <div class="p-8 flex flex-col items-center gap-6 bg-white" id="printable-label">
+          <div class="text-center space-y-1">
+            <h3 class="font-black text-slate-900 text-lg leading-tight">{{ selectedProductForQr?.name }}</h3>
+            <p v-if="selectedProductForQr?.size" class="font-bold text-slate-500 text-sm">Tamanho: {{ selectedProductForQr?.size }}</p>
+          </div>
+          
+          <div class="p-4 bg-white rounded-xl border-2 border-slate-900">
+             <img :src="qrCodeUrl" class="w-32 h-32 object-contain" style="image-rendering: pixelated" />
+          </div>
+          
+          <p class="font-mono text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-lg">#{{ selectedProductForQr?.id }}</p>
+        </div>
+
+        <div class="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
+          <button @click="printLabel" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-slate-900/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+            Imprimir
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -231,7 +272,8 @@ const form = reactive({
   cost_price: 0,
   stock: 0,
   category_id: null,
-  gender: null
+  gender: null,
+  size: ''
 });
 
 const categories = ref([]);
@@ -266,6 +308,7 @@ const openModal = (product = null) => {
     form.stock = product.stock;
     form.category_id = product.category_id;
     form.gender = product.gender;
+    form.size = product.size || '';
   } else {
     editingId.value = null;
     form.name = '';
@@ -274,8 +317,56 @@ const openModal = (product = null) => {
     form.stock = 0;
     form.category_id = null;
     form.gender = null;
+    form.size = '';
   }
   showModal.value = true;
+};
+
+// QR Code Logic
+const showQrModal = ref(false);
+const qrCodeUrl = ref('');
+const selectedProductForQr = ref(null);
+
+const generateProductQr = async (product) => {
+  try {
+    selectedProductForQr.value = product;
+    const result = await window.api.generateQR(product.id.toString());
+    if (result.success) {
+      qrCodeUrl.value = result.url;
+      showQrModal.value = true;
+    } else {
+      alert('Erro ao gerar QRCode: ' + result.error);
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao gerar QRCode');
+  }
+};
+
+const closeQrModal = () => {
+  showQrModal.value = false;
+  qrCodeUrl.value = '';
+  selectedProductForQr.value = null;
+};
+
+const printLabel = () => {
+  const content = document.getElementById('printable-label').innerHTML;
+  const win = window.open('', '', 'height=500,width=500');
+  win.document.write('<html><head><title>Imprimir Etiqueta</title>');
+  win.document.write('<style>');
+  win.document.write(`
+    body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .label-container { display: flex; flex-col; align-items: center; text-align: center; width: 100%; max-width: 300px; padding: 20px; }
+    h3 { margin: 0 0 5px 0; font-size: 16px; font-weight: 900; }
+    p { margin: 0; font-size: 14px; font-weight: 700; color: #64748B; }
+    img { width: 150px; height: 150px; margin: 10px 0; image-rendering: pixelated; }
+    .code { font-family: monospace; font-size: 12px; font-weight: 700; color: #000; background: #F1F5F9; padding: 4px 8px; border-radius: 4px; }
+  `);
+  win.document.write('</style></head><body>');
+  win.document.write('<div class="label-container">' + content + '</div>');
+  win.document.write('</body></html>');
+  win.document.close();
+  win.print();
 };
 
 const applyMargin = () => {
