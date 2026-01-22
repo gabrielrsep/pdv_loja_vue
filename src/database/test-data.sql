@@ -50,17 +50,18 @@ INSERT INTO products (id, name, category_id, size, price, cost_price, stock, gen
 (20, 'Blusa de Lã Soft', 5, 'G', 139.90, 129.90, 5, 'Feminino');
 
 -- Insert Customers (10 items)
-INSERT INTO customers (id, name, age, phone, address, balance, last_payment_date) VALUES 
-(1, 'João Silva', 32, '(11) 98765-4321', 'Rua das Flores, 123', 0, '2025-12-20T10:00:00.000Z'),
-(2, 'Maria Oliveira', 28, '(11) 91234-5678', 'Av. Central, 500', 150.00, '2025-12-15T14:30:00.000Z'),
-(3, 'Carlos Santos', 45, '(11) 97777-8888', 'Rua Augusta, 1500', 0, '2025-12-28T16:00:00.000Z'),
-(4, 'Ana Costa', 24, '(11) 96666-5555', 'Al. Jau, 200', 45.90, '2025-12-05T09:00:00.000Z'),
-(5, 'Pedro Rocha', 50, '(11) 95555-4444', 'Rua Mato Grosso, 88', 0, '2025-11-20T11:00:00.000Z'),
-(6, 'Fernanda Lima', 35, '(11) 94444-3333', 'Rua Oscar Freire, 10', 320.00, NULL),
-(7, 'Ricardo Alves', 38, '(11) 93333-2222', 'Av. Paulista, 1000', 0, '2025-12-30T17:00:00.000Z'),
-(8, 'Juliana Souza', 29, '(11) 92222-1111', 'Rua Bela Cintra, 450', 89.90, '2025-12-10T15:00:00.000Z'),
-(9, 'Marcos Pereira', 42, '(11) 91111-0000', 'Rua Haddock Lobo, 300', 0, '2025-12-25T13:00:00.000Z'),
-(10, 'Beatriz Mendes', 31, '(11) 90000-9999', 'Av. Brigadeiro, 2500', 0, '2025-12-29T10:00:00.000Z');
+INSERT INTO customers (id, name, age, phone, address, balance, last_payment_date, can_sell) VALUES 
+(1, 'João Silva', 32, '(11) 98765-4321', 'Rua das Flores, 123', 0, '2025-12-20T10:00:00.000Z', 1),
+(2, 'Maria Oliveira', 28, '(11) 91234-5678', 'Av. Central, 500', 150.00, '2025-12-15T14:30:00.000Z', 1),
+(3, 'Carlos Santos', 45, '(11) 97777-8888', 'Rua Augusta, 1500', 0, '2025-12-28T16:00:00.000Z', 1),
+(4, 'Ana Costa', 24, '(11) 96666-5555', 'Al. Jau, 200', 45.90, '2025-12-05T09:00:00.000Z', 1),
+(5, 'Pedro Rocha', 50, '(11) 95555-4444', 'Rua Mato Grosso, 88', 0, '2025-11-20T11:00:00.000Z', 0),
+(6, 'Fernanda Lima', 35, '(11) 94444-3333', 'Rua Oscar Freire, 10', 320.00, NULL, 1),
+(7, 'Ricardo Alves', 38, '(11) 93333-2222', 'Av. Paulista, 1000', 0, '2025-12-30T17:00:00.000Z', 1),
+(8, 'Juliana Souza', 29, '(11) 92222-1111', 'Rua Bela Cintra, 450', 89.90, '2025-12-10T15:00:00.000Z', 1),
+(9, 'Marcos Pereira', 42, '(11) 91111-0000', 'Rua Haddock Lobo, 300', 0, '2025-12-25T13:00:00.000Z', 1),
+(10, 'Beatriz Mendes', 31, '(11) 90000-9999', 'Av. Brigadeiro, 2500', 0, '2025-12-29T10:00:00.000Z', 1);
+
 
 -- Insert Sales (November and December 2025)
 -- December 2025

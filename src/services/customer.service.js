@@ -29,7 +29,7 @@ function registerCustomerHandlers(db) {
 
     // Save customer
     ipcMain.handle('customer:save', async (event, customer) => {
-        const { id, name, age, phone, address, balance, observations } = customer;
+        const { id, name, age, phone, address, balance, observations, can_sell } = customer;
 
         if (id) {
             // Fetch current balance to check for payment
@@ -42,13 +42,13 @@ function registerCustomerHandlers(db) {
             }
 
             // Update
-            const sql = `UPDATE customers SET name = ?, age = ?, phone = ?, address = ?, balance = ?, last_payment_date = ?, observations = ? WHERE id = ?`;
-            db.prepare(sql).run([name, age, phone, address, balance, finalLastPaymentDate, observations, id]);
+            const sql = `UPDATE customers SET name = ?, age = ?, phone = ?, address = ?, balance = ?, last_payment_date = ?, observations = ?, can_sell = ? WHERE id = ?`;
+            db.prepare(sql).run([name, age, phone, address, balance, finalLastPaymentDate, observations, can_sell, id]);
             return { success: true, id };
         } else {
             // Insert
-            const sql = `INSERT INTO customers (name, age, phone, address, balance, observations) VALUES (?, ?, ?, ?, ?, ?)`;
-            const { lastInsertRowid } = db.prepare(sql).run([name, age, phone, address, balance, observations]);
+            const sql = `INSERT INTO customers (name, age, phone, address, balance, observations, can_sell) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+            const { lastInsertRowid } = db.prepare(sql).run([name, age, phone, address, balance, observations, can_sell]);
             return { success: true, id: lastInsertRowid };
         }
     });

@@ -23,7 +23,8 @@ const form = reactive({
   age: null,
   address: '',
   balance: 0,
-  observations: ''
+  observations: '',
+  can_sell: 1
 });
 
 const fetchCustomers = async () => {
@@ -49,6 +50,7 @@ const openModal = (c = null) => {
     form.address = c.address || '';
     form.balance = c.balance;
     form.observations = c.observations || '';
+    form.can_sell = c.can_sell;
   } else {
     editingId.value = null;
     form.name = '';
@@ -57,6 +59,7 @@ const openModal = (c = null) => {
     form.address = '';
     form.balance = 0;
     form.observations = '';
+    form.can_sell = 1;
   }
   showModal.value = true;
 };
@@ -282,6 +285,11 @@ onMounted(fetchCustomers);
             <div class="space-y-2">
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Observações</label>
               <textarea v-model="form.observations" placeholder="Observações sobre o cliente..." rows="3" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none font-medium text-sm resize-none"></textarea>
+            </div>
+
+            <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <input type="checkbox" id="can_sell" v-model="form.can_sell" :true-value="1" :false-value="0" class="w-5 h-5 rounded-lg text-blue-600 focus:ring-blue-500 border-gray-300" />
+              <label for="can_sell" class="text-sm font-bold text-slate-700 cursor-pointer select-none">Pode vender para este cliente</label>
             </div>
 
             <div class="space-y-2">

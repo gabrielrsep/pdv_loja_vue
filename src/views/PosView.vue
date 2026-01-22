@@ -160,15 +160,7 @@
           <div class="grid grid-cols-1 gap-4">
             <div class="space-y-2">
               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Identificar Cliente</label>
-              <div class="relative">
-                <select v-model="selectedCustomerId" class="w-full pl-5 pr-12 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary-500 shadow-sm transition-all outline-none appearance-none cursor-pointer">
-                  <option value="">Consumidor Final</option>
-                  <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}</option>
-                </select>
-                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-                </div>
-              </div>
+              <ClientCombobox v-model="selectedCustomerId" @select="handleCustomerSelected" />
             </div>
 
             <label class="flex items-center gap-4 p-5 bg-white border border-slate-200 rounded-[1.5rem] shadow-sm cursor-pointer hover:border-orange-200 transition-all group">
@@ -198,28 +190,21 @@
   </div>
 </template>
 
+
 <script setup>
 import { formatCurrency } from '@/utils';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
+import ClientCombobox from '@/components/ClientCombobox.vue';
+import { useToastStore } from '@/store/toast';
 
-// Estado migrado do Alpine
+const toastStore = useToastStore();
+
 const searchQuery = ref('');
 const products = ref([]);
 const cart = ref([]);
-const customers = ref([]);
 const selectedCustomerId = ref('');
 const toAccount = ref(false);
 let searchTimeout = null;
-
-// Carregar clientes na inicialização
-const loadCustomers = async () => {
-  try {
-    const result = await window.api.getCustomers({ page: 1, pageSize: 1000 });
-    customers.value = result.data;
-  } catch (err) {
-    console.error('Erro ao buscar clientes:', err);
-  }
-};
 
 const calculateDiscount = (price, promotional_price) => {
   return ((1 - (promotional_price / price)) * 100).toFixed(2)
@@ -259,14 +244,14 @@ const addToCart = product => {
   const existingItem = cart.value.find(item => item.id === product.id);
   if (existingItem) {
     if (existingItem.quantity >= product.stock) {
-      alert('Estoque insuficiente!');
+      toastStore.showToast('Estoque insuficiente!', 'error');
       return;
     }
     existingItem.quantity++;
     existingItem.subtotal = existingItem.quantity * existingItem.price;
   } else {
     if (product.stock <= 0) {
-      alert('Produto sem estoque!');
+      toastStore.showToast('Produto sem estoque!', 'error');
       return;
     }
     cart.value.push({
@@ -289,7 +274,7 @@ const updateQuantity = (index, change) => {
   } else if (newQuantity <= 0) {
     cart.value.splice(index, 1);
   } else {
-    alert('Limite de estoque atingido!');
+    toastStore.showToast('Limite de estoque atingido!', 'error');
   }
 };
 
@@ -313,18 +298,21 @@ const checkout = async () => {
     });
     
     if (result.success) {
-      alert('Venda realizada com sucesso!');
+      toastStore.showToast('Venda realizada com sucesso!');
       cart.value = [];
       handleSearch(); // Atualiza estoque na lista
     } else {
-      alert('Erro ao finalizar venda: ' + result.error);
+      toastStore.showToast('Erro ao finalizar venda: ' + result.error, 'error');
     }
   } catch (err) {
-    alert('Erro ao finalizar venda: ' + err.message);
+    toastStore.showToast('Erro ao finalizar venda: ' + err.message, 'error');
   }
 };
 
-onMounted(() => {
-  loadCustomers();
-});
+const handleCustomerSelected = (customer, clearState) => {
+  if(customer.can_sell === 0) {
+    toastStore.showToast('Não é possível vender para este cliente por conta de restrições do estabelecimento', 'error');
+    clearState();
+  }
+};
 </script>

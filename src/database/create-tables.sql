@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS customers (
     balance REAL NOT NULL DEFAULT 0,
     last_payment_date TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    can_sell INTEGER DEFAULT 1, -- 1 = pode vender para o cliente, 0 = não pode vender para o cliente
     observations TEXT
 );
 
