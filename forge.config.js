@@ -15,7 +15,8 @@ module.exports = {
     asar: true,
     extraResource: [
       ...extraResources,
-      'src/config.jsonc'
+      'src/config.jsonc',
+      'src/template_recibo.html'
     ]
   },
   rebuildConfig: {},

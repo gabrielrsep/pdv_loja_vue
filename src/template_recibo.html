@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprovante de Venda</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+        }
+        #info {
+            font-size: .8rem;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-direction: column;
+
+        }
+        #cabecalho {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-direction: column;
+        }
+        #produtos {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .produto {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            font-size: .9rem;
+        }
+        #totais {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-direction: column;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .product-name {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rangel Modas</h1>
+    <hr>
+    <div id="info">
+        <span>CNPJ: 14.251.039/0001-96</span>
+        <span>Endereço: Rua 123, 456 - Centro - Cidade - Estado</span>
+    </div>
+    <hr>
+    <div id="venda">
+        <div id="cabecalho">
+            <span>Data: {{data}}</span>
+            <span>Venda #{{sale_id}}</span>
+            <span>Cliente: {{cliente}}</span>
+        </div>
+        <hr>
+        <div id="produtos">
+            {{produtos}}
+        </div>
+        <div id="totais">
+            <span>Total: {{total}}</span>
+        </div>
+    </div>
+</body>
+</html>

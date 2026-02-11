@@ -102,6 +102,40 @@
           </div>
         </div>
 
+        <!-- Printer Configuration Card -->
+        <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-black text-slate-800 leading-tight">Impressão de Recibos</h2>
+              <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Selecione o dispositivo padrão</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Impressora Selecionada</label>
+              <div class="relative">
+                <select 
+                  v-model="localConfig.printer_device_name" 
+                  class="w-full pl-6 pr-12 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-slate-500 focus:bg-white transition-all outline-none font-bold text-slate-700 appearance-none"
+                >
+                  <option value="">Nenhuma</option>
+                  <option v-for="printer in availablePrinters" :key="printer.name" :value="printer.name">
+                    {{ printer.name }}
+                  </option>
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-6 flex items-center pointer-events-none text-slate-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </div>
+              <p class="text-[10px] text-slate-500 font-medium ml-1">Dispositivo usado para imprimir cupons fiscais e recibos.</p>
+            </div>
+          </div>
+        </div>
+
         <!-- System Info & Updates Card -->
         <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8">
           <div class="flex items-center gap-4">
@@ -173,26 +207,34 @@ const settingsStore = useSettingsStore();
 const localConfig = reactive({
   margin: 0,
   allow_salesperson_undo_sale: false,
-  githubToken: '',
   checkOnStartup: true,
-  autoDownload: false
+  autoDownload: false,
+  printer_device_name: ''
 });
 
 // Update-related state
 const appVersion = ref('...');
 const checkingUpdates = ref(false);
 const lastUpdateCheck = ref(null);
-const showToken = ref(false);
+
+const availablePrinters = ref([]);
 
 onMounted(async () => {
   await settingsStore.fetchConfig();
-  // Sincroniza a cópia local com o que vem do banco de dados
+  // Sincroniza a cópia local com o que vem do arquivo de configuração
   Object.assign(localConfig, settingsStore.config);
   
   // Get app version
   const versionResult = await window.api.getAppVersion();
   if (versionResult.success) {
     appVersion.value = versionResult.version;
+  }
+
+  // Get printers
+  try {
+    availablePrinters.value = await window.api.getPrinters();
+  } catch (err) {
+    console.error('Erro ao buscar impressoras:', err);
   }
 });
 
@@ -207,7 +249,7 @@ async function handleSave() {
 
 async function handleCheckUpdates() {
   checkingUpdates.value = true;
-  const result = await window.api.checkForUpdates();
+  await window.api.checkForUpdates();
   checkingUpdates.value = false;
   
   // Update last check time

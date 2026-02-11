@@ -2,6 +2,7 @@ import { parse, stringify, assign } from 'comment-json';
 import { readFileSync, copyFileSync, writeFileSync } from 'fs-extra';
 import path from 'path';
 import { app } from 'electron';
+import Logger from 'electron-log';
 
 const devPath = path.join(process.cwd(), 'src');
 
@@ -43,7 +44,7 @@ const copyConfig = (db) => {
         if (count === 0) {
             copyFileSync(getResourcesPath('config.jsonc'), appData('config.jsonc'));
         }
-        console.log('Config copied');
+        Logger.info('Config copied to app data folder');
     }
 }
 
@@ -74,6 +75,10 @@ const saveConfig = (newConfig) => {
 
     if (newConfig.autoDownload !== undefined) {
         newConfig.autoDownload = Boolean(newConfig.autoDownload);
+    }
+
+    if (newConfig.printer_device_name !== undefined) {
+        newConfig.printer_device_name = String(newConfig.printer_device_name);
     }
 
     const updatedConfig = assign(currentConfig, newConfig);

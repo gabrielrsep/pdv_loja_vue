@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useToastStore } from '@/store/toast'
+import { useAuthStore } from '@/store/auth'
 import { formatCurrency } from '@/utils';
 
 const customers = ref([]);
@@ -16,6 +17,7 @@ const selectedCustomer = ref(null);
 const currentStats = ref({});
 
 const toastStore = useToastStore();
+const authStore = useAuthStore();
 
 const form = reactive({
   name: '',
@@ -287,7 +289,7 @@ onMounted(fetchCustomers);
               <textarea v-model="form.observations" placeholder="Observações sobre o cliente..." rows="3" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none font-medium text-sm resize-none"></textarea>
             </div>
 
-            <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div v-if="authStore.user.role !== 'vendedor'" class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
               <input type="checkbox" id="can_sell" v-model="form.can_sell" :true-value="1" :false-value="0" class="w-5 h-5 rounded-lg text-blue-600 focus:ring-blue-500 border-gray-300" />
               <label for="can_sell" class="text-sm font-bold text-slate-700 cursor-pointer select-none">Pode vender para este cliente</label>
             </div>

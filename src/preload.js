@@ -83,4 +83,8 @@ contextBridge.exposeInMainWorld('api', {
     onUpdateError: (callback) => {
         ipcRenderer.on('update-error', (_, data) => callback(data));
     },
+
+    // Print API
+    getPrinters: () => ipcRenderer.invoke('print:get-printers'),
+    printCart: (cart, printerName) => ipcRenderer.invoke('print-cart', cart, printerName),
 });

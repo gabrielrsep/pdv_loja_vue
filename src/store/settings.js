@@ -7,7 +7,8 @@ export const useSettingsStore = defineStore('settings', {
             allow_salesperson_undo_sale: false,
             githubToken: '',
             checkOnStartup: true,
-            autoDownload: false
+            autoDownload: false,
+            printer_device_name: ''
         },
         loading: false
     }),

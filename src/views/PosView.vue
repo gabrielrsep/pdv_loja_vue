@@ -1,3 +1,148 @@
+<script setup>
+import { formatCurrency } from '@/utils';
+import { ref, computed, onMounted } from 'vue';
+import ClientCombobox from '@/components/ClientCombobox.vue';
+import { useToastStore } from '@/store/toast';
+import { useSettingsStore } from '@/store/settings';
+
+const toastStore = useToastStore();
+const settingsStore = useSettingsStore();
+
+const searchQuery = ref('');
+const products = ref([]);
+const cart = ref([]);
+const selectedCustomerId = ref('');
+const toAccount = ref(false);
+let searchTimeout = null;
+
+onMounted(() => {
+  settingsStore.fetchConfig();
+});
+
+const calculateDiscount = (price, promotional_price) => {
+  return ((1 - (promotional_price / price)) * 100).toFixed(2)
+};
+
+const showPrice = price => {
+  function truncarDecimais(valor, casas) {
+    const multiplicador = Math.pow(10, casas);
+    return Math.floor(valor * multiplicador) / multiplicador;
+  }
+  return formatCurrency(truncarDecimais(price, 1))
+}
+
+// Busca de produtos com debounce
+const handleSearch = () => {
+  if (!searchQuery.value) {
+    products.value = [];
+    return;
+  }
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(async () => {
+    try {
+      products.value = await window.api.searchProducts(searchQuery.value);
+    } catch (err) {
+      console.error('Erro na busca:', err);
+    }
+  }, 300);
+};
+
+const effectivePrice = product => {
+  return product.promotional_price != product.price ? product.promotional_price : product.price;
+}
+
+// Adicionar item ao carrinho
+const addToCart = product => {
+  const effective_price = effectivePrice(product);
+  const existingItem = cart.value.find(item => item.id === product.id);
+  if (existingItem) {
+    if (existingItem.quantity >= product.stock) {
+      toastStore.showToast('Estoque insuficiente!', 'error');
+      return;
+    }
+    existingItem.quantity++;
+    existingItem.subtotal = existingItem.quantity * existingItem.price;
+  } else {
+    if (product.stock <= 0) {
+      toastStore.showToast('Produto sem estoque!', 'error');
+      return;
+    }
+    cart.value.push({
+      id: product.id,
+      name: product.name,
+      price: effective_price,
+      quantity: 1,
+      subtotal: effective_price,
+      stock: product.stock
+    });
+  }
+};
+
+const updateQuantity = (index, change) => {
+  const item = cart.value[index];
+  const newQuantity = item.quantity + change;
+  if (newQuantity > 0 && newQuantity <= item.stock) {
+    item.quantity = newQuantity;
+    item.subtotal = item.quantity * item.price;
+  } else if (newQuantity <= 0) {
+    cart.value.splice(index, 1);
+  } else {
+    toastStore.showToast('Limite de estoque atingido!', 'error');
+  }
+};
+
+const removeFromCart = (index) => {
+  cart.value.splice(index, 1);
+};
+
+const total = computed(() => {
+  return cart.value.reduce((acc, item) => acc + item.subtotal, 0);
+});
+
+const checkout = async () => {
+  if (cart.value.length === 0) return;
+  try {
+    const cleanCart = JSON.parse(JSON.stringify(cart.value));
+    const result = await window.api.createSale({
+      total: total.value,
+      items: cleanCart,
+      customer_id: selectedCustomerId.value || null,
+      to_account: toAccount.value
+    });
+    
+    if (result.success) {
+      toastStore.showToast('Venda realizada com sucesso!');
+      const printDevice = settingsStore.config.printer_device_name
+      if(printDevice) {
+        window.api.printCart({
+          items: cleanCart,
+          total: total.value,
+          customer_id: selectedCustomerId.value,
+          date: result.date,
+          sale_id: result.saleId
+        }, printDevice);
+      }
+      
+      cart.value = [];
+      selectedCustomerId.value = null;
+      toAccount.value = false;
+      handleSearch(); // Atualiza estoque na lista
+    } else {
+      toastStore.showToast('Erro ao finalizar venda: ' + result.error, 'error');
+    }
+  } catch (err) {
+    toastStore.showToast('Erro ao finalizar venda: ' + err.message, 'error');
+  }
+};
+
+const handleCustomerSelected = (customer, clearState) => {
+  if(customer.can_sell === 0) {
+    toastStore.showToast('Não é possível vender para este cliente por conta de restrições do estabelecimento', 'error');
+    clearState();
+  }
+};
+</script>
+
 <template>
   <div class="flex h-full gap-6 overflow-hidden">
     <!-- Left Column: Products -->
@@ -189,130 +334,3 @@
     </div>
   </div>
 </template>
-
-
-<script setup>
-import { formatCurrency } from '@/utils';
-import { ref, computed } from 'vue';
-import ClientCombobox from '@/components/ClientCombobox.vue';
-import { useToastStore } from '@/store/toast';
-
-const toastStore = useToastStore();
-
-const searchQuery = ref('');
-const products = ref([]);
-const cart = ref([]);
-const selectedCustomerId = ref('');
-const toAccount = ref(false);
-let searchTimeout = null;
-
-const calculateDiscount = (price, promotional_price) => {
-  return ((1 - (promotional_price / price)) * 100).toFixed(2)
-};
-
-const showPrice = price => {
-  function truncarDecimais(valor, casas) {
-    const multiplicador = Math.pow(10, casas);
-    return Math.floor(valor * multiplicador) / multiplicador;
-  }
-  return formatCurrency(truncarDecimais(price, 1))
-}
-
-// Busca de produtos com debounce
-const handleSearch = () => {
-  if (!searchQuery.value) {
-    products.value = [];
-    return;
-  }
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(async () => {
-    try {
-      products.value = await window.api.searchProducts(searchQuery.value);
-    } catch (err) {
-      console.error('Erro na busca:', err);
-    }
-  }, 300);
-};
-
-const effectivePrice = product => {
-  return product.promotional_price != product.price ? product.promotional_price : product.price;
-}
-
-// Adicionar item ao carrinho
-const addToCart = product => {
-  const effective_price = effectivePrice(product);
-  const existingItem = cart.value.find(item => item.id === product.id);
-  if (existingItem) {
-    if (existingItem.quantity >= product.stock) {
-      toastStore.showToast('Estoque insuficiente!', 'error');
-      return;
-    }
-    existingItem.quantity++;
-    existingItem.subtotal = existingItem.quantity * existingItem.price;
-  } else {
-    if (product.stock <= 0) {
-      toastStore.showToast('Produto sem estoque!', 'error');
-      return;
-    }
-    cart.value.push({
-      id: product.id,
-      name: product.name,
-      price: effective_price,
-      quantity: 1,
-      subtotal: effective_price,
-      stock: product.stock
-    });
-  }
-};
-
-const updateQuantity = (index, change) => {
-  const item = cart.value[index];
-  const newQuantity = item.quantity + change;
-  if (newQuantity > 0 && newQuantity <= item.stock) {
-    item.quantity = newQuantity;
-    item.subtotal = item.quantity * item.price;
-  } else if (newQuantity <= 0) {
-    cart.value.splice(index, 1);
-  } else {
-    toastStore.showToast('Limite de estoque atingido!', 'error');
-  }
-};
-
-const removeFromCart = (index) => {
-  cart.value.splice(index, 1);
-};
-
-const total = computed(() => {
-  return cart.value.reduce((acc, item) => acc + item.subtotal, 0);
-});
-
-const checkout = async () => {
-  if (cart.value.length === 0) return;
-  try {
-    const cleanCart = JSON.parse(JSON.stringify(cart.value));
-    const result = await window.api.createSale({
-      total: total.value,
-      items: cleanCart,
-      customer_id: selectedCustomerId.value || null,
-      to_account: toAccount.value
-    });
-    
-    if (result.success) {
-      toastStore.showToast('Venda realizada com sucesso!');
-      cart.value = [];
-      handleSearch(); // Atualiza estoque na lista
-    } else {
-      toastStore.showToast('Erro ao finalizar venda: ' + result.error, 'error');
-    }
-  } catch (err) {
-    toastStore.showToast('Erro ao finalizar venda: ' + err.message, 'error');
-  }
-};
-
-const handleCustomerSelected = (customer, clearState) => {
-  if(customer.can_sell === 0) {
-    toastStore.showToast('Não é possível vender para este cliente por conta de restrições do estabelecimento', 'error');
-    clearState();
-  }
-};
-</script>

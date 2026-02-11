@@ -22,7 +22,7 @@ function registerSalesHandlers(db) {
                     itemStmt.run([saleId, item.id, item.quantity, item.subtotal]);
                 }
 
-                return { success: true, saleId };
+                return { success: true, saleId, date };
             })(); // Execute the transaction
 
             return result;

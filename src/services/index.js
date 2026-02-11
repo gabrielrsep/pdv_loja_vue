@@ -8,6 +8,7 @@ import { registerStatsHandlers } from './stats.service.js';
 import { registerCategoryHandlers } from './category.service.js';
 import { registerPromotionHandlers } from './promotion.service.js';
 import { registerUpdateHandlers } from './update.service.js';
+import { registerPrintHandlers } from './print.service.js';
 
 export const registerAllHandlers = (db) => {
     registerAuthHandlers(db);
@@ -20,4 +21,5 @@ export const registerAllHandlers = (db) => {
     registerCategoryHandlers(db);
     registerPromotionHandlers(db);
     registerUpdateHandlers();
+    registerPrintHandlers();
 };

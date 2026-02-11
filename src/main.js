@@ -13,6 +13,7 @@ import './cmd.js';
 import packageJson from '../package.json';
 import { registerAllHandlers } from './services';
 import { initializeUpdateService, checkForUpdatesOnStartup } from './services/update.service.js';
+import Logger from 'electron-log';
 
 // Register all IPC Handlers
 registerAllHandlers(db);
@@ -52,10 +53,12 @@ const createWindow = () => {
   return mainWindow;
 };
 
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+
   const mainWindow = createWindow();
 
   // Initialize update service with main window reference and database
