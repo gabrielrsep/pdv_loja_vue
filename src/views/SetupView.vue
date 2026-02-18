@@ -86,9 +86,11 @@
 import { reactive } from 'vue';
 import { useAuthStore } from '../store/auth';
 import { useToastStore } from '../store/toast';
+import { useRouter } from 'vue-router';
 
 const toast = useToastStore();
 const authStore = useAuthStore();
+const router = useRouter();
 const form = reactive({
   username: '',
   password: '',
@@ -101,7 +103,6 @@ async function handleSetup() {
   if (form.password !== form.confirmPassword) {
     return alert('As senhas não coincidem!'); // Lógica migrada do renderer.js
   }
-  console.log(authStore);
 
   const result = await authStore.registerFirstAdmin(form);
   if (!result.success) {

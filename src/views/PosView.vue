@@ -144,36 +144,36 @@ const handleCustomerSelected = (customer, clearState) => {
 </script>
 
 <template>
-  <div class="flex h-full gap-6 overflow-hidden">
+  <div class="flex flex-col lg:flex-row h-full gap-4 lg:gap-6 overflow-y-auto lg:overflow-hidden">
     <!-- Left Column: Products -->
-    <div class="flex-1 flex flex-col gap-6 min-w-0">
+    <div class="flex-1 flex flex-col gap-6">
       <!-- Search Bar -->
       <div class="relative group">
-        <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400 group-focus-within:text-primary-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <div class="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 sm:h-6 w-5 sm:w-6 text-slate-400 group-focus-within:text-primary-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
         <input 
           v-model="searchQuery" 
           @input="handleSearch"
           type="text" 
           placeholder="Buscar produtos (Nome ou Código)..." 
-          class="w-full pl-16 pr-6 py-5 bg-white border-0 rounded-[2rem] shadow-sm focus:ring-2 focus:ring-primary-500 outline-none text-xl font-medium placeholder:text-slate-400 transition-all focus:shadow-xl focus:shadow-primary-600/5"
+          class="w-full pl-14 sm:pl-16 pr-6 py-3 sm:py-5 bg-white border-0 rounded-2xl sm:rounded-[2rem] shadow-sm focus:ring-2 focus:ring-primary-500 outline-none text-sm sm:text-base lg:text-xl font-medium placeholder:text-slate-400 placeholder:text-xs sm:placeholder:text-base transition-all focus:shadow-xl focus:shadow-primary-600/5"
         />
       </div>
 
       <!-- Product List -->
-      <div class="flex-1 bg-white rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col overflow-hidden">
-        <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+      <div class="flex-1 bg-white rounded-2xl sm:rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col overflow-hidden">
+        <div class="p-4 sm:p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
           <div>
-            <h3 class="font-black text-slate-900 text-xl tracking-tight">Catálogo de Produtos</h3>
+            <h3 class="font-black text-slate-900 text-lg sm:text-xl tracking-tight">Catálogo de Produtos</h3>
             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Selecione itens para o carrinho</p>
           </div>
           <span class="px-4 py-1.5 bg-white border border-slate-100 rounded-full text-xs font-black text-slate-500 uppercase tracking-widest shadow-sm">{{ products.length }} itens encontrados</span>
         </div>
         
-        <div class="flex-1 overflow-y-auto p-8">
-          <div v-if="products.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
-            <div v-for="product in products" :key="product.id" class="group bg-white rounded-[2.5rem] border border-slate-100 p-7 transition-all duration-300 hover:shadow-2xl hover:shadow-primary-600/10 hover:border-primary-100 flex flex-col justify-between relative overflow-hidden h-full">
+        <div class="flex-1 overflow-y-auto p-4 sm:p-8">
+          <div v-if="products.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+            <div v-for="product in products" :key="product.id" class="group bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 p-4 sm:p-7 transition-all duration-300 hover:shadow-2xl hover:shadow-primary-600/10 hover:border-primary-100 flex flex-col justify-between relative overflow-hidden h-full">
               <!-- Decorative Background Gradient -->
               <div class="absolute inset-0 bg-gradient-to-br from-primary-50/0 via-transparent to-primary-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
@@ -191,7 +191,7 @@ const handleCustomerSelected = (customer, clearState) => {
                   <span class="text-[11px] font-black text-slate-200 uppercase tracking-widest group-hover:text-primary-200 transition-colors">#{{ product.id }}</span>
                 </div>
                 
-                <h4 class="font-black text-slate-800 text-xl leading-tight mb-2 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[3.5rem]">{{ product.name }}</h4>
+                <h4 class="font-black text-slate-800 text-base sm:text-lg lg:text-xl leading-tight mb-2 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[2.5rem] sm:min-h-[3.5rem]">{{ product.name }}</h4>
                 <div class="flex items-center gap-2 flex-wrap">
                   <div class="flex items-center gap-1.5 px-2 py-1 bg-slate-50 rounded-lg border border-slate-100 group-hover:bg-white group-hover:border-primary-50 transition-all">
                     <span 
@@ -237,9 +237,9 @@ const handleCustomerSelected = (customer, clearState) => {
                 
                 <button 
                   @click="addToCart(product)"
-                  class="w-14 h-14 bg-primary-600 text-white rounded-[1.25rem] flex items-center justify-center hover:bg-primary-700 transition-all duration-300 shadow-xl shadow-primary-600/30 active:scale-90 transform hover:-translate-y-1 group-hover:rotate-6"
+                  class="w-12 h-12 sm:w-14 sm:h-14 bg-primary-600 text-white rounded-xl sm:rounded-[1.25rem] flex items-center justify-center hover:bg-primary-700 transition-all duration-300 shadow-xl shadow-primary-600/30 active:scale-90 transform hover:-translate-y-1 group-hover:rotate-6"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                 </button>
               </div>
             </div>
@@ -257,27 +257,27 @@ const handleCustomerSelected = (customer, clearState) => {
     </div>
 
     <!-- Right Column: Cart -->
-    <div class="w-[420px] flex flex-col gap-6">
-      <div class="flex-1 bg-white rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-col overflow-hidden relative">
-        <div class="p-8 border-b border-slate-50 flex items-center justify-between bg-white sticky top-0 z-20">
+    <div class="w-full lg:w-[420px] flex flex-col gap-4 lg:gap-6">
+      <div class="flex-1 bg-white rounded-2xl sm:rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-col overflow-hidden relative">
+        <div class="p-4 sm:p-8 border-b border-slate-50 flex items-center justify-between bg-white sticky top-0 z-20">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 bg-primary-600 rounded-[1.25rem] flex items-center justify-center text-white shadow-xl shadow-primary-600/30">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
             </div>
             <div>
-              <h2 class="text-2xl font-black text-slate-900 tracking-tight">Meu Carrinho</h2>
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Meu Carrinho</h2>
               <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{{ cart.length }} itens no total</p>
             </div>
           </div>
           <button v-if="cart.length > 0" @click="cart = []" class="text-[10px] font-black text-red-400 hover:text-red-600 uppercase tracking-widest transition-colors">Limpar</button>
         </div>
         
-        <div class="flex-1 overflow-y-auto p-6 space-y-4">
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4">
           <div v-for="(item, index) in cart" :key="item.id" class="p-5 bg-slate-50/50 rounded-3xl border border-slate-100 group transition-all hover:bg-white hover:border-primary-200 hover:shadow-md">
             <div class="flex justify-between items-start">
               <div>
-                <span class="font-bold text-slate-800 text-lg leading-tight">{{ item.name }}</span>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-tight mt-1">{{ showPrice(item.price) }} / cada</p>
+            <span class="font-bold text-slate-800 text-base sm:text-lg leading-tight">{{ item.name }}</span>
+            <p class="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-tight mt-1">{{ showPrice(item.price) }} / cada</p>
               </div>
               <button @click="removeFromCart(index)" class="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all opacity-0 group-hover:opacity-100">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -285,11 +285,11 @@ const handleCustomerSelected = (customer, clearState) => {
             </div>
             <div class="flex justify-between items-center mt-4 pt-4 border-t border-slate-100/50">
               <div class="flex items-center gap-1 bg-white p-1 rounded-2xl shadow-sm border border-slate-200">
-                <button @click="updateQuantity(index, -1)" class="w-8 h-8 flex items-center justify-center hover:bg-slate-50 rounded-xl text-slate-400 hover:text-primary-600 transition-all font-black text-xl">-</button>
-                <span class="w-10 text-center font-black text-slate-900 text-lg">{{ item.quantity }}</span>
-                <button @click="updateQuantity(index, 1)" class="w-8 h-8 flex items-center justify-center hover:bg-slate-50 rounded-xl text-slate-400 hover:text-primary-600 transition-all font-black text-xl">+</button>
+                <button @click="updateQuantity(index, -1)" class="w-8 h-8 flex items-center justify-center hover:bg-slate-50 rounded-lg text-slate-400 hover:text-primary-600 transition-all font-black text-lg">-</button>
+                <span class="w-10 text-center font-black text-slate-900 text-base">{{ item.quantity }}</span>
+                <button @click="updateQuantity(index, 1)" class="w-8 h-8 flex items-center justify-center hover:bg-slate-50 rounded-lg text-slate-400 hover:text-primary-600 transition-all font-black text-lg">+</button>
               </div>
-              <span class="font-black text-slate-900 text-xl">{{ showPrice(item.subtotal) }}</span>
+              <span class="font-black text-slate-900 text-lg sm:text-xl">{{ showPrice(item.subtotal) }}</span>
             </div>
           </div>
           
@@ -301,7 +301,7 @@ const handleCustomerSelected = (customer, clearState) => {
           </div>
         </div>
 
-        <div class="p-8 bg-slate-50 border-t border-slate-100 space-y-6">
+        <div class="p-4 sm:p-8 bg-slate-50 border-t border-slate-100 space-y-4 sm:space-y-6">
           <div class="grid grid-cols-1 gap-4">
             <div class="space-y-2">
               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Identificar Cliente</label>
@@ -325,7 +325,7 @@ const handleCustomerSelected = (customer, clearState) => {
           <button 
             @click="checkout"
             :disabled="cart.length === 0"
-            class="w-full bg-primary-600 text-white py-5 rounded-[2rem] font-black text-xl hover:bg-primary-700 disabled:opacity-30 disabled:grayscale transition-all shadow-2xl shadow-primary-600/30 active:scale-[0.98] transform hover:scale-[1.01]"
+            class="w-full bg-primary-600 text-white py-4 sm:py-5 rounded-2xl sm:rounded-[2rem] font-black text-base sm:text-xl hover:bg-primary-700 disabled:opacity-30 disabled:grayscale transition-all shadow-2xl shadow-primary-600/30 active:scale-[0.98] transform hover:scale-[1.01]"
           >
             Confirmar e Finalizar
           </button>
