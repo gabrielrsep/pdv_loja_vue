@@ -132,8 +132,8 @@
 
     <!-- Modal Redesign -->
     <div v-if="showModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[70] p-4 animate-in fade-in duration-300">
-      <div class="glass border border-white/20 rounded-[2.5rem] shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-300">
-        <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-white/50">
+      <div class="glass border border-white/20 rounded-[2.5rem] shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+        <div class="p-6 md:p-8 border-b border-slate-100 flex justify-between items-center bg-white/50">
           <div>
             <h2 class="text-xl font-black text-slate-900 tracking-tight">{{ editingId ? 'Editar Produto' : 'Novo Produto' }}</h2>
             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ editingId ? 'Identificador #' + editingId : 'Preencha os campos abaixo' }}</p>
@@ -141,7 +141,7 @@
           <button @click="showModal = false" class="w-8 h-8 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all font-bold">✕</button>
         </div>
         
-        <form @submit.prevent="saveProduct" class="p-8 space-y-6">
+        <form @submit.prevent="saveProduct" class="p-6 md:p-8 space-y-6 flex-1 overflow-y-auto">
           <div class="space-y-4">
             <div class="space-y-2">
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nome do Produto</label>
@@ -173,7 +173,7 @@
             </div>
           </div>
           
-          <div class="grid grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Preço de Custo</label>
               <div class="relative flex gap-2">

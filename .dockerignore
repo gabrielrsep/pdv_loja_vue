@@ -1,0 +1,10 @@
+node_modules
+dist
+out
+build
+.env
+.DS_Store
+.vscode
+.agent
+.github
+.git

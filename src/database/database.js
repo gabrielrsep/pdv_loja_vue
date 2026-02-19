@@ -19,7 +19,6 @@ function readDatabaseFile(...filePath) {
 
 const createTablesSQL = readDatabaseFile('create-tables.sql');
 db.exec(createTablesSQL);
-console.log("Database created...");
 
 let testDataSQL;
 if (!app.isPackaged) {

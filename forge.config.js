@@ -21,10 +21,10 @@ module.exports = {
   },
   rebuildConfig: {},
   makers: [
-    // {
-    //   name: '@electron-forge/maker-squirrel',
-    //   config: {},
-    // },
+    {
+      name: '@electron-forge/maker-squirrel',
+      config: {},
+    },
     // {
     //   name: '@electron-forge/maker-zip',
     //   platforms: ['darwin'],
@@ -50,6 +50,7 @@ module.exports = {
         draft: false, // Changed to false so releases are published immediately
         // For private repos, the release assets will still be accessible
         // to authenticated users with repo access
+        authToken: process.env.GITHUB_TOKEN
       }
     }
   ],

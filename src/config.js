@@ -5,8 +5,7 @@ import { app } from 'electron';
 import Logger from 'electron-log';
 
 const devPath = path.join(process.cwd(), 'src');
-
-
+    
 /**
  * 
  * @param {string[]} paths 
@@ -18,6 +17,7 @@ const getResourcesPath = (...paths) => {
      * se for em desenvolvimento, pega o path normal
      * os arquivos em produção estão na rais do process.resourcesPath
      */
+    
     if (app.isPackaged) {
         return path.join(process.resourcesPath, paths.at(-1));
     }
