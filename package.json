@@ -1,6 +1,6 @@
 {
   "name": "pdv_loja",
-  "version": "1.1.0-beta",
+  "version": "1.1.1-beta",
   "description": "PDV Rangel Modas",
   "main": ".vite/build/main.js",
   "author": "Gabriel R. Sepulveda",

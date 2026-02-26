@@ -130,7 +130,7 @@
       </div>
     </div>
 
-    <!-- Modal Redesign -->
+    <!-- Modal -->
     <div v-if="showModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[70] p-4 animate-in fade-in duration-300">
       <div class="glass border border-white/20 rounded-[2.5rem] shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
         <div class="p-6 md:p-8 border-b border-slate-100 flex justify-between items-center bg-white/50">
@@ -351,22 +351,7 @@ const closeQrModal = () => {
 
 const printLabel = () => {
   const content = document.getElementById('printable-label').innerHTML;
-  const win = window.open('', '', 'height=500,width=500');
-  win.document.write('<html><head><title>Imprimir Etiqueta</title>');
-  win.document.write('<style>');
-  win.document.write(`
-    body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-    .label-container { display: flex; flex-col; align-items: center; text-align: center; width: 100%; max-width: 300px; padding: 20px; }
-    h3 { margin: 0 0 5px 0; font-size: 16px; font-weight: 900; }
-    p { margin: 0; font-size: 14px; font-weight: 700; color: #64748B; }
-    img { width: 150px; height: 150px; margin: 10px 0; image-rendering: pixelated; }
-    .code { font-family: monospace; font-size: 12px; font-weight: 700; color: #000; background: #F1F5F9; padding: 4px 8px; border-radius: 4px; }
-  `);
-  win.document.write('</style></head><body>');
-  win.document.write('<div class="label-container">' + content + '</div>');
-  win.document.write('</body></html>');
-  win.document.close();
-  win.print();
+  window.api.printLabel(settingsStore.config.printerName, content);
 };
 
 const applyMargin = () => {

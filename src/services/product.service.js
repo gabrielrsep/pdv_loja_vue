@@ -71,15 +71,6 @@ function registerProductHandlers(db) {
         }
     });
 
-    // Select Image
-    ipcMain.handle('dialog:select-image', async () => {
-        const result = await dialog.showOpenDialog({
-            properties: ['openFile'],
-            filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif', 'webp'] }]
-        });
-        return result.filePaths[0];
-    });
-
     // Generate QR Code
     ipcMain.handle('product:generate-qr', async (_, text) => {
         try {
@@ -88,6 +79,12 @@ function registerProductHandlers(db) {
         } catch (err) {
             return { success: false, error: err.message };
         }
+    });
+
+    ipcMain.handle('product:count', () => {
+        const sql = "SELECT COUNT(*) as total FROM products";
+        const total = db.prepare(sql).get().total;
+        return { total };
     });
 }
 

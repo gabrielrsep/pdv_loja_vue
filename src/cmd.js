@@ -1,3 +1,37 @@
+/**
+ * Command-line interface for managing PDV (Ponto de Venda) application
+ * 
+ * This module provides administrative CLI commands for the PDV application, including:
+ * - Database clearing functionality (development mode only)
+ * - User password management with admin authentication
+ * 
+ * Features:
+ * - Interactive readline interface for user input validation
+ * - Secure password hashing using bcryptjs
+ * - Admin role verification for password changes
+ * - Database operations using better-sqlite3
+ * 
+ * Supported Commands:
+ * - `--clear-db`: Clears the SQLite database (only in development/unpackaged app)
+ * - `change-password <username>`: Changes password for specified user after admin authentication
+ * 
+ * @module cmd
+ * @requires path - Node.js path utilities
+ * @requires fs-extra - File system operations with extras
+ * @requires bcryptjs - Password hashing library
+ * @requires readline - Interactive CLI interface
+ * @requires electron - Electron app context for packaging check
+ * @requires ./database/database.js - Database connection instance
+ * 
+ * @example
+ * // Clear database in development
+ * node cmd.js --clear-db
+ * 
+ * @example
+ * // Change user password
+ * node cmd.js change-password username
+ */
+
 import path from 'path';
 import { db } from './database/database.js';
 import bcrypt from 'bcryptjs';

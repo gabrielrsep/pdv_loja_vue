@@ -11,8 +11,8 @@ contextBridge.exposeInMainWorld('api', {
     searchProducts: (query) => ipcRenderer.invoke('product:search', query),
     getProducts: (params) => ipcRenderer.invoke('product:get-all', params),
     saveProduct: (product) => ipcRenderer.invoke('product:save', product),
-    selectImage: () => ipcRenderer.invoke('dialog:select-image'),
     generateQR: (text) => ipcRenderer.invoke('product:generate-qr', text),
+    countProducts: () => ipcRenderer.invoke('product:count'),
 
     // Categories
     getCategories: () => ipcRenderer.invoke('category:get-all'),
@@ -86,5 +86,6 @@ contextBridge.exposeInMainWorld('api', {
 
     // Print API
     getPrinters: () => ipcRenderer.invoke('print:get-printers'),
-    printCart: (cart, printerName) => ipcRenderer.invoke('print-cart', cart, printerName),
+    printCart: (cart, printerName) => ipcRenderer.invoke('print:cart', cart, printerName),
+    printLabel: (content) => ipcRenderer.invoke('print:label', content),
 });

@@ -13,7 +13,6 @@ import './cmd.js';
 import packageJson from '../package.json';
 import { registerAllHandlers } from './services';
 import { initializeUpdateService, checkForUpdatesOnStartup } from './services/update.service.js';
-import Logger from 'electron-log';
 
 // Register all IPC Handlers
 registerAllHandlers(db);
@@ -37,8 +36,6 @@ const createWindow = () => {
     },
   });
 
-  mainWindow.setMenu(null);
-
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
@@ -46,8 +43,8 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
 
-  if (!app.isPackaged) {
-    mainWindow.webContents.openDevTools();
+  if(app.isPackaged) {
+    mainWindow.setMenu(null);
   }
 
   return mainWindow;
