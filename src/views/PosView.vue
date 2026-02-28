@@ -173,7 +173,7 @@ const handleCustomerSelected = (customer, clearState) => {
         
         <div class="flex-1 overflow-y-auto p-4 sm:p-8">
           <div v-if="products.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
-            <div v-for="product in products" :key="product.id" class="group bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 p-4 sm:p-7 transition-all duration-300 hover:shadow-2xl hover:shadow-primary-600/10 hover:border-primary-100 flex flex-col justify-between relative overflow-hidden h-full">
+            <div v-for="product in products" :key="product.id" class="group bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 p-4 sm:p-7 transition-all duration-300 hover:shadow-2xl hover:shadow-primary-600/10 hover:border-primary-100 flex flex-col justify-between relative h-full">
               <!-- Decorative Background Gradient -->
               <div class="absolute inset-0 bg-gradient-to-br from-primary-50/0 via-transparent to-primary-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
@@ -191,7 +191,12 @@ const handleCustomerSelected = (customer, clearState) => {
                   <span class="text-[11px] font-black text-slate-200 uppercase tracking-widest group-hover:text-primary-200 transition-colors">#{{ product.id }}</span>
                 </div>
                 
-                <h4 class="font-black text-slate-800 text-base sm:text-lg lg:text-xl leading-tight mb-2 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[2.5rem] sm:min-h-[3.5rem]">{{ product.name }}</h4>
+                <div class="relative group/product-name">
+                  <h4 class="font-black text-slate-800 text-base sm:text-lg lg:text-xl leading-tight mb-2 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[2.5rem] sm:min-h-[3.5rem]">{{ product.name }}</h4>
+                  <div class="absolute left-0 top-full mt-2 z-30 w-max max-w-[20rem] px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold leading-snug shadow-2xl opacity-0 invisible translate-y-1 pointer-events-none transition-all duration-150 group-hover/product-name:opacity-100 group-hover/product-name:visible group-hover/product-name:translate-y-0 break-words">
+                    {{ product.name }}
+                  </div>
+                </div>
                 <div class="flex items-center gap-2 flex-wrap">
                   <div class="flex items-center gap-1.5 px-2 py-1 bg-slate-50 rounded-lg border border-slate-100 group-hover:bg-white group-hover:border-primary-50 transition-all">
                     <span 
@@ -274,9 +279,12 @@ const handleCustomerSelected = (customer, clearState) => {
         
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4">
           <div v-for="(item, index) in cart" :key="item.id" class="p-5 bg-slate-50/50 rounded-3xl border border-slate-100 group transition-all hover:bg-white hover:border-primary-200 hover:shadow-md">
-            <div class="flex justify-between items-start">
-              <div>
-            <span class="font-bold text-slate-800 text-base sm:text-lg leading-tight">{{ item.name }}</span>
+            <div class="flex justify-between items-start gap-2">
+              <div class="relative group/cart-name min-w-0 flex-1">
+            <span class="block font-bold text-slate-800 text-base sm:text-lg leading-tight truncate">{{ item.name }}</span>
+            <div class="absolute left-0 top-full mt-2 z-30 w-max max-w-[18rem] px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold leading-snug shadow-2xl opacity-0 invisible translate-y-1 pointer-events-none transition-all duration-150 group-hover/cart-name:opacity-100 group-hover/cart-name:visible group-hover/cart-name:translate-y-0 break-words">
+              {{ item.name }}
+            </div>
             <p class="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-tight mt-1">{{ showPrice(item.price) }} / cada</p>
               </div>
               <button @click="removeFromCart(index)" class="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all opacity-0 group-hover:opacity-100">

@@ -46,17 +46,8 @@ function registerProductHandlers(db) {
 
     // Save product
     ipcMain.handle('product:save', async (_, product) => {
-        const { id, name, category_id, size, price, cost_price, stock, image_path, gender } = product;
+        const { id, name, category_id, size, price, cost_price, stock, gender } = product;
         const finalCostPrice = cost_price || 0;
-
-        // let finalImagePath = image_path;
-
-        // if (image_path && !image_path.startsWith('product_images/')) {
-        //     const fileName = `${Date.now()}-${path.basename(image_path)}`;
-        //     const dest = path.join(__dirname, '../product_images', fileName);
-        //     await fs.copy(image_path, dest);
-        //     finalImagePath = `product_images/${fileName}`;
-        // }
 
         if (id) {
             // Update
@@ -81,10 +72,18 @@ function registerProductHandlers(db) {
         }
     });
 
+    // Count total products
     ipcMain.handle('product:count', () => {
         const sql = "SELECT COUNT(*) as total FROM products";
         const total = db.prepare(sql).get().total;
         return { total };
+    });
+
+    // Delete product
+    ipcMain.handle('product:delete', (_, id) => {
+        const sql = "DELETE FROM products WHERE id = ?";
+        db.prepare(sql).run(id);
+        return { success: true };
     });
 }
 
