@@ -23,7 +23,7 @@
         </div>
         <div>
           <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total de Produtos</p>
-          <p class="text-2xl font-black text-slate-900 leading-tight">{{ products.length }}</p>
+          <p class="text-2xl font-black text-slate-900 leading-tight">{{ productCount }}</p>
         </div>
       </div>
 
@@ -106,7 +106,7 @@
                   <button @click="generateProductQr(product)" class="p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-all" title="Gerar Etiqueta QR">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
                   </button>
-                  <button @click="deleteProduct(product.id)" class="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-all" title="Excluir">
+                  <button @click="deleteProduct(product)" class="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-all" title="Excluir">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                   </button>
                 </div>
@@ -217,6 +217,57 @@
       </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[80] p-4 animate-in fade-in duration-300">
+      <div class="glass border border-white/20 rounded-[2.5rem] shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-300">
+        <div class="p-6 md:p-8 border-b border-slate-100 bg-white/50">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+            </div>
+            <div>
+              <h2 class="text-xl font-black text-slate-900 tracking-tight">Confirmar Exclusão</h2>
+              <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Esta ação não pode ser desfeita</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="p-6 md:p-8 space-y-6 bg-white">
+          <div class="space-y-3">
+            <p class="text-slate-700 font-medium leading-relaxed">
+              Tem certeza que deseja excluir o produto <span class="font-black text-slate-900">{{ productToDelete?.name }}</span>?
+            </p>
+            <div class="bg-red-50 border border-red-100 rounded-2xl p-4">
+              <div class="flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                <div class="space-y-1">
+                  <p class="text-xs font-bold text-red-700">Atenção:</p>
+                  <p class="text-xs text-red-600 leading-relaxed">O produto será removido permanentemente do sistema e de todas as estatísticas relacionadas.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col-reverse sm:flex-row gap-3 pt-4">
+            <button 
+              @click="cancelDelete" 
+              type="button"
+              class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3.5 rounded-2xl font-bold transition-all active:scale-[0.98] border border-slate-200"
+            >
+              Cancelar
+            </button>
+            <button 
+              @click="confirmDelete"
+              type="button"
+              class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-2xl font-bold shadow-lg shadow-red-600/20 transition-all active:scale-[0.98]"
+            >
+              Excluir Produto
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- QR Code Modal -->
     <div v-if="showQrModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[80] p-4 animate-in fade-in duration-300">
       <div class="glass border border-white/20 rounded-[2.5rem] shadow-2xl max-w-sm w-full overflow-hidden animate-in zoom-in-95 duration-300">
@@ -256,6 +307,7 @@
 import { ref, onMounted, reactive } from 'vue';
 import { useSettingsStore } from '@/store/settings';
 import { formatCurrency } from '@/utils';
+import { useToastStore } from '@/store/toast';
 
 const settingsStore = useSettingsStore();
 
@@ -265,6 +317,9 @@ const page = ref(1);
 const pageSize = 10;
 const showModal = ref(false);
 const editingId = ref(null);
+const productCount = ref(0);
+
+const toastStore = useToastStore();
 
 const form = reactive({
   name: '',
@@ -294,6 +349,9 @@ const fetchProducts = async () => {
       search: search.value 
     });
     products.value = result.data;
+
+    const countResult = await window.api.countProducts();
+    productCount.value = countResult.total;
   } catch (err) {
     console.error('Erro ao carregar estoque:', err);
   }
@@ -327,6 +385,10 @@ const showQrModal = ref(false);
 const qrCodeUrl = ref('');
 const selectedProductForQr = ref(null);
 
+// Delete Confirmation Logic
+const showDeleteModal = ref(false);
+const productToDelete = ref(null);
+
 const generateProductQr = async (product) => {
   try {
     selectedProductForQr.value = product;
@@ -335,11 +397,11 @@ const generateProductQr = async (product) => {
       qrCodeUrl.value = result.url;
       showQrModal.value = true;
     } else {
-      alert('Erro ao gerar QRCode: ' + result.error);
+      toastStore.show('Erro ao gerar QRCode: ' + result.error, 'error');
     }
   } catch (err) {
     console.error(err);
-    alert('Erro ao gerar QRCode');
+    toastStore.show('Erro ao gerar QRCode', 'error');
   }
 };
 
@@ -368,18 +430,39 @@ const saveProduct = async () => {
       showModal.value = false;
       fetchProducts();
     } else {
-      alert(result.error);
+      toastStore.showToast(result.error, 'error');
     }
   } catch (err) {
-    alert('Erro ao salvar produto');
+    toastStore.showToast('Erro ao salvar produto', 'error');
   }
 };
 
-const deleteProduct = async (id) => {
-  if (confirm('Deseja realmente excluir este produto?')) {
-    const result = await window.api.deleteProduct(id);
-    if (result.success) fetchProducts();
+const deleteProduct = (product) => {
+  productToDelete.value = product;
+  showDeleteModal.value = true;
+};
+
+const confirmDelete = async () => {
+  if (!productToDelete.value) return;
+  
+  try {
+    const result = await window.api.deleteProduct(productToDelete.value.id);
+    if (result.success) {
+      showDeleteModal.value = false;
+      productToDelete.value = null;
+      fetchProducts();
+    } else {
+      toastStore.showToast('Erro ao excluir produto: ' + result.error, 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    toastStore.showToast('Erro ao excluir produto', 'error');
   }
+};
+
+const cancelDelete = () => {
+  showDeleteModal.value = false;
+  productToDelete.value = null;
 };
 
 const changePage = (delta) => {

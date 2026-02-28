@@ -8,11 +8,13 @@ contextBridge.exposeInMainWorld('api', {
     getConfig: () => ipcRenderer.invoke('config:get'),
     saveConfig: (config) => ipcRenderer.invoke('config:save', config),
 
+    // Products
     searchProducts: (query) => ipcRenderer.invoke('product:search', query),
     getProducts: (params) => ipcRenderer.invoke('product:get-all', params),
     saveProduct: (product) => ipcRenderer.invoke('product:save', product),
     generateQR: (text) => ipcRenderer.invoke('product:generate-qr', text),
     countProducts: () => ipcRenderer.invoke('product:count'),
+    deleteProduct: (id) => ipcRenderer.invoke('product:delete', id),
 
     // Categories
     getCategories: () => ipcRenderer.invoke('category:get-all'),
